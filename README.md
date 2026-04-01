@@ -37,6 +37,10 @@ Your design document should describe what you want to build, the tech stack, and
 
 **Attempt Tracking** — each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
 
+**Task Context** — each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly — by execution time, everything relevant should be captured in the task and pipeline.
+
+**Not Just for Code** — Forge works for any file-based project. If no tech stack is detected, the council is inferred from the design document alone. Default roles (`programmer`, `tester`, `product-manager`) can be replaced during the approval step with whatever fits the project (e.g., `writer`, `editor`, `strategist`).
+
 ## Docs
 
 - [goal.md](docs/goal.md) — problem statement and motivation
