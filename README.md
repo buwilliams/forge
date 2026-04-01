@@ -1,0 +1,48 @@
+# Forge
+
+A Claude Code plugin for executing large, ambitious coding projects without losing sight of your constraints.
+
+## The Problem
+
+When coding agents tackle multi-step projects, requirements drift. An instruction like "no mocks or stubs" or "use real data only" gets buried in context and ignored by step 10. Forge fixes this.
+
+## How It Works
+
+Forge takes a design document and runs it through an 8-phase pipeline:
+
+1. **Init** — validates the environment and sets up a workspace
+2. **Resume Check** — skips to the right phase if the run was interrupted
+3. **Council** — approves the agent roles (perspectives) needed for the project
+4. **Pipeline Design** — captures tech stack, global constraints, and quality bar
+5. **Agent Generation** — generates project-specific agents for the council
+6. **Plan Decomposition** — breaks work into small, self-contained tasks
+7. **Execution** — runs each task through a verify → save → confirm loop
+8. **Report** — summarizes what was built
+
+The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`), so runs are always resumable and fully visible.
+
+## Usage
+
+```
+/forge path/to/design.md
+```
+
+Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
+
+## Key Concepts
+
+**Global Constraints** — defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
+
+**Council Deliberation** — before implementation, the task agent reasons through each council role's perspective (architect, tester, security, etc.) in a single context. This catches issues before code is written.
+
+**Attempt Tracking** — each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
+
+## Docs
+
+- [goal.md](docs/goal.md) — problem statement and motivation
+- [plan.md](docs/plan.md) — full implementation blueprint
+
+## Requirements
+
+- [Claude Code](https://claude.ai/code) CLI
+- A git repository for the target project
