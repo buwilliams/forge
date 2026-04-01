@@ -479,7 +479,7 @@ If there are blocked tasks, print:
 
 ## Path Resolution
 
-The forge plugin lives at a known path (the plugin directory). When you need to read agent files from the plugin (e.g., `agents/pipeline-designer.md`, `agents/verifier.md`), resolve them relative to the forge plugin's own directory. In Claude Code, the plugin directory is known at invocation time. If you cannot resolve the plugin path, try common locations: `~/.claude/plugins/forge/`, `<project>/.claude/plugins/forge/`, or the path where this file (`commands/forge.md`) is located.
+When you need to read agent files from the plugin (e.g., `agents/pipeline-designer.md`, `agents/verifier.md`), resolve them as `${CLAUDE_PLUGIN_ROOT}/agents/<filename>`. `${CLAUDE_PLUGIN_ROOT}` is always set to the plugin's install directory by Claude Code.
 
 ---
 
