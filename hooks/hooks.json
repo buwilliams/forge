@@ -1,9 +1,14 @@
 {
-  "hooks": [
-    {
-      "event": "SessionStart",
-      "description": "Remind user if a forge run is in progress",
-      "command": "bash -c 'shopt -s globstar nullglob 2>/dev/null; files=(\"$PROJECT_ROOT\"/forge/*/working/*.md); if [ ${#files[@]} -gt 0 ]; then echo \"[forge] A run is in progress (task in working/). Re-run /forge <design.md> to resume.\"; fi'"
-    }
-  ]
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'shopt -s globstar nullglob 2>/dev/null; files=(\"$PROJECT_ROOT\"/forge/*/working/*.md); if [ ${#files[@]} -gt 0 ]; then echo \"[forge] A run is in progress (task in working/). Re-run /forge <design.md> to resume.\"; fi'"
+          }
+        ]
+      }
+    ]
+  }
 }

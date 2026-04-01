@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "forge",
+  "description": "Local marketplace for the forge plugin",
+  "owner": {
+    "name": "User"
+  },
+  "plugins": [
+    {
+      "name": "forge",
+      "description": "Pipeline-based project execution for Claude Code agents",
+      "source": "."
+    }
+  ]
+}

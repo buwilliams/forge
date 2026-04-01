@@ -2,12 +2,5 @@
   "name": "forge",
   "version": "0.1.0",
   "description": "Pipeline-based project execution for Claude Code agents",
-  "commands": [
-    {
-      "name": "forge",
-      "description": "Design, decompose, and execute a project from a design.md file",
-      "source": "commands/forge.md"
-    }
-  ],
-  "hooks": "hooks/hooks.json"
+  "commands": ["./commands/forge.md"]
 }
