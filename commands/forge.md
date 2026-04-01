@@ -27,7 +27,7 @@ Check whether `.git/` exists at `PROJECT_ROOT` using Bash (`test -d "$PROJECT_RO
 Take the basename of the design file path, strip the `.md` extension, replace every non-alphanumeric character (anything that is not `[a-z0-9]`) with an underscore, collapse consecutive underscores into one, strip leading/trailing underscores, and lowercase the result. For example: `My Cool Design.md` → `my_cool_design`, `api-v2.md` → `api_v2`, `design.md` → `design`.
 
 Let `NAME` = that sanitized string.
-Let `FORGE_DIR` = `<git-root>/forge/<NAME>`.
+Let `FORGE_DIR` = `<PROJECT_ROOT>/.forge/<NAME>`.
 
 **Check for directory collision.**
 If `<FORGE_DIR>/` already exists, read `<FORGE_DIR>/.forge_source`. If that file contains a different basename than the current design file's basename, print `[forge] Error: directory name collision — '<NAME>' is already claimed by a different design file` and stop.
@@ -489,7 +489,7 @@ When you need to read agent files from the plugin (e.g., `agents/pipeline-design
 |---|---|
 | `PROJECT_ROOT` | Session working directory (`pwd`) — never resolved via git |
 | `NAME` | Sanitized design filename (e.g., `design`, `my_cool_design`) |
-| `FORGE_DIR` | `<PROJECT_ROOT>/forge/<NAME>` |
+| `FORGE_DIR` | `<PROJECT_ROOT>/.forge/<NAME>` |
 | `<FORGE_DIR>/council.md` | Approved council roster |
 | `<FORGE_DIR>/pipeline.md` | Approved pipeline spec |
 | `<FORGE_DIR>/plan.md` | Work decomposition summary |

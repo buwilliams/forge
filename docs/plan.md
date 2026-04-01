@@ -4,11 +4,12 @@
 
 forge is a Claude Code plugin that solves a real problem: coding agents fail at large, ambitious tasks because instructions span too much implementation space. forge takes a `design.md` document, designs a pipeline (workflow), decomposes the work into small chunks (each completable in a single Agent call), and then executes those chunks in a loop until the whole project is done. The core execution substrate for every task is: **experiment → verify → save** (repeat). The plugin is a native Claude Code plugin — Bash and all other Claude Code tools are available; the key shift is that the control flow is driven by Claude, not by shell scripts.
 
+
 ---
 
 ## Plugin Architecture Overview
 
-The plugin lives at `/home/buddy/projects/forge/`. When a user runs `/forge path/to/design.md` on any project, forge creates artifacts inside that project under `<project>/forge/<name>/` where `<name>` is the sanitized design filename.
+The plugin lives at `/home/buddy/projects/forge/`. When a user runs `/forge path/to/design.md` on any project, forge creates artifacts inside that project under `<project>/.forge/<name>/` where `<name>` is the sanitized design filename.
 
 **Key design decisions:**
 - The `/forge` command is the execution loop — it uses the `Agent` tool to run tasks one at a time, in-session, blocking the main Claude Code session
@@ -46,7 +47,7 @@ The plugin lives at `/home/buddy/projects/forge/`. When a user runs `/forge path
 
 **Generated artifacts in user's project:**
 ```
-<project>/forge/<name>/
+<project>/.forge/<name>/
 ├── council.md              # Approved council roster (roles + one-line purpose each)
 ├── pipeline.md             # Approved pipeline spec
 ├── plan.md                 # Work decomposition summary
@@ -70,7 +71,7 @@ The plugin lives at `/home/buddy/projects/forge/`. When a user runs `/forge path
 
 ### `/forge path/to/design.md`
 
-1. **Init** — Read design.md. Ensure the project is a git repository: if `.git/` does not exist at the project root, run `git init`; if that fails, exit with `[forge] Error: could not initialize a git repository here`. Derive the directory name from the design file's basename: strip the `.md` extension, replace non-alphanumeric characters with underscores, collapse consecutive underscores, and lowercase — e.g. `My Cool Design.md` → `my_cool_design`. Set `FORGE_DIR=<git-root>/forge/<name>`. If `<forge_dir>/` already exists, read `<forge_dir>/.forge_source`: if it contains a different basename, exit with `[forge] Error: directory name collision — '<name>' is already claimed by a different design file`. Otherwise create the directory tree (todo/, working/, done/, blocked/, council/, hooks/, skills/, log/) and write the design file's basename to `<forge_dir>/.forge_source`. Echo: `[forge] Initializing — <name>`
+1. **Init** — Read design.md. Ensure the project is a git repository: if `.git/` does not exist at the project root, run `git init`; if that fails, exit with `[forge] Error: could not initialize a git repository here`. Derive the directory name from the design file's basename: strip the `.md` extension, replace non-alphanumeric characters with underscores, collapse consecutive underscores, and lowercase — e.g. `My Cool Design.md` → `my_cool_design`. Set `FORGE_DIR=<project-root>/.forge/<name>`. If `<forge_dir>/` already exists, read `<forge_dir>/.forge_source`: if it contains a different basename, exit with `[forge] Error: directory name collision — '<name>' is already claimed by a different design file`. Otherwise create the directory tree (todo/, working/, done/, blocked/, council/, hooks/, skills/, log/) and write the design file's basename to `<forge_dir>/.forge_source`. Echo: `[forge] Initializing — <name>`
 
 2. **Resume check** — Check which artifacts exist and resume at the earliest incomplete phase:
    - `todo/` or `working/` have files → skip to phase 7 (Execute). Print: `[forge] Resuming existing run — <N> tasks remaining`.
@@ -236,14 +237,7 @@ Registers the plugin's command with Claude Code:
   "name": "forge",
   "version": "0.1.0",
   "description": "Pipeline-based project execution for Claude Code agents",
-  "commands": [
-    {
-      "name": "forge",
-      "description": "Design, decompose, and execute a project from a design.md file",
-      "source": "commands/forge.md"
-    }
-  ],
-  "hooks": "hooks/hooks.json"
+  "commands": ["./commands/forge.md"]
 }
 ```
 
@@ -251,7 +245,7 @@ Registers the plugin's command with Claude Code:
 
 ## `hooks/hooks.json` (plugin-level)
 
-SessionStart hook: checks for `<project>/forge/*/working/*.md`. If any exist, prints:
+SessionStart hook: checks for `<project>/.forge/*/working/*.md`. If any exist, prints:
 > `[forge] A run is in progress (task in working/). Re-run /forge <design.md> to resume.`
 
 This prevents silent state confusion if the user opens a new session mid-run.
@@ -261,11 +255,11 @@ This prevents silent state confusion if the user opens a new session mid-run.
 ## Verification Plan
 
 1. Create a small test `design.md` in a temp git repo
-2. Run `/forge design.md` — verify `forge/design/council.md` is created and the council approval loop works: request a change, verify it is incorporated before proceeding
-3. Verify `forge/design/pipeline.md` is created and its approval loop works: request a change, verify it is incorporated before proceeding
+2. Run `/forge design.md` — verify `.forge/design/council.md` is created and the council approval loop works: request a change, verify it is incorporated before proceeding
+3. Verify `.forge/design/pipeline.md` is created and its approval loop works: request a change, verify it is incorporated before proceeding
 4. Verify the agent approval loop works: request a change, verify regeneration before proceeding
-5. Verify `forge/design/council/` contains exactly the roles listed in `council.md` (at minimum `programmer.md`, `tester.md`, `product-manager.md`)
-6. Verify `forge/design/todo/*.md` files use `00000_` numeric prefix, contain no YAML frontmatter, no `## Stage` field, and have `## Verification` sections with both assertions and commands
+5. Verify `.forge/design/council/` contains exactly the roles listed in `council.md` (at minimum `programmer.md`, `tester.md`, `product-manager.md`)
+6. Verify `.forge/design/todo/*.md` files use `00000_` numeric prefix, contain no YAML frontmatter, no `## Stage` field, and have `## Verification` sections with both assertions and commands
 7. Run `/forge design.md` to trigger execution — confirm tasks move from todo/ → working/ → (verifier pass) → done/ in ascending numeric order
 8. Test verifier failure: make a task's implementation incomplete → confirm `verifier` returns `<verify-fail>`, task moves back to `todo/`, and is retried
 9. Verify completion summary is echoed in-context after all tasks finish
