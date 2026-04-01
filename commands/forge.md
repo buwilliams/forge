@@ -17,8 +17,11 @@ You have full access to all Claude Code tools: Bash, Read, Write, Edit, Glob, Gr
 **Read the design file.**
 Use the Read tool on the provided path. If the file does not exist, print `[forge] Error: design.md not found at '<path>'` and stop.
 
+**Establish the project root.**
+Run `pwd` via Bash. That output is `PROJECT_ROOT`. Do NOT use `git rev-parse --show-toplevel` — the session working directory is always the project root, regardless of any parent git repositories.
+
 **Ensure the project is a git repository.**
-The project root is the directory from which the user ran Claude Code (the session working directory). Check whether `.git/` exists at the project root using Bash (`test -d <project_root>/.git`). If it does not exist, run `git init` in the project root. If `git init` fails, print `[forge] Error: could not initialize a git repository here` and stop.
+Check whether `.git/` exists at `PROJECT_ROOT` using Bash (`test -d "$PROJECT_ROOT/.git"`). If it does not exist, run `git init "$PROJECT_ROOT"`. If `git init` fails, print `[forge] Error: could not initialize a git repository here` and stop.
 
 **Derive the forge directory name.**
 Take the basename of the design file path, strip the `.md` extension, replace every non-alphanumeric character (anything that is not `[a-z0-9]`) with an underscore, collapse consecutive underscores into one, strip leading/trailing underscores, and lowercase the result. For example: `My Cool Design.md` → `my_cool_design`, `api-v2.md` → `api_v2`, `design.md` → `design`.
@@ -484,7 +487,7 @@ The forge plugin lives at a known path (the plugin directory). When you need to 
 
 | Variable | Resolved value |
 |---|---|
-| `PROJECT_ROOT` | Git repository root (where `.git/` lives) |
+| `PROJECT_ROOT` | Session working directory (`pwd`) — never resolved via git |
 | `NAME` | Sanitized design filename (e.g., `design`, `my_cool_design`) |
 | `FORGE_DIR` | `<PROJECT_ROOT>/forge/<NAME>` |
 | `<FORGE_DIR>/council.md` | Approved council roster |
