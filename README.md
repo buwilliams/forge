@@ -35,6 +35,10 @@ Your design document should describe what you want to build, the tech stack, and
 
 **Council Deliberation** — before implementation, the task agent reasons through each council role's perspective (architect, tester, security, etc.) in a single context. This catches issues before code is written.
 
+**`council/*.md` files** — generated in Phase 5, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
+- **Phase 6 (Plan Decomposition):** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
+- **Phase 7 (Execution):** the file matching the task's role becomes that agent's primary instructions. All council files are also passed together so the agent can deliberate from every perspective before acting.
+
 **Attempt Tracking** — each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
 
 **Task Context** — each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly — by execution time, everything relevant should be captured in the task and pipeline.
