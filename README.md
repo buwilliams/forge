@@ -37,11 +37,11 @@ Your design document should describe what you want to build, the tech stack, and
 
 **Global Constraints** — defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
 
-**Council Deliberation** — before implementation, the task agent reasons through each council role's perspective (architect, tester, security, etc.) in a single context. This catches issues before code is written.
+**Council Deliberation** — before implementation, the task agent reasons through each council role's perspective (programmer, tester, product-manager, etc.) in a single context. This catches issues before code is written.
 
-**`council/*.md` files** — generated in Phase 5, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
-- **Phase 6 (Plan Decomposition):** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
-- **Phase 7 (Execution):** the file matching the task's role becomes that agent's primary instructions. All council files are also passed together so the agent can deliberate from every perspective before acting.
+**`council/*.md` files** — generated in Phase 3, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
+- **Phase 4 (Plan Decomposition):** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
+- **Phase 5 (Execution):** the file matching the task's role becomes that agent's primary instructions. All council files are also passed together so the agent can deliberate from every perspective before acting.
 
 **Attempt Tracking** — each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
 
