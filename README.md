@@ -19,6 +19,16 @@ Forge takes a design document and runs it through a pipeline:
 
 The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and forge picks up where it left off.
 
+## Workflow
+
+1. **Write a design doc** — describe what to build, the tech stack, and any non-negotiable constraints
+2. **Run forge** — `/forge design.md` works through the full pipeline automatically
+3. **If tasks block** — forge creates `design-blocked.md` summarizing each failure and its reason
+4. **Resolve the issues** — edit `design-blocked.md` to clarify requirements, add context, or adjust constraints
+5. **Run forge again** — `/forge design-blocked.md` starts a fresh run targeting only the failures
+
+Always forward — completed work is never re-run.
+
 ## Usage
 
 Open a Claude Code session in your project directory, then:
@@ -33,8 +43,6 @@ Open a Claude Code session in your project directory, then:
 With `--ask`, forge pauses at the council, pipeline, and agent generation phases, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion. Interrupted runs resume automatically on the next invocation.
 
 Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
-
-**If tasks get blocked**, use `--blocked` to generate a `design-blocked.md` file containing each failed task and its reason. Edit it to address the issues, then run `/forge design-blocked.md` as a fresh run targeting only the failures.
 
 **Testing forge itself:**
 
