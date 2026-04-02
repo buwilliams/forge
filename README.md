@@ -19,6 +19,34 @@ Forge takes a design document and runs it through a pipeline:
 
 The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and forge picks up where it left off.
 
+## Installation
+
+**Option 1 — Marketplace (recommended):**
+
+From within a Claude Code session:
+```
+/plugin marketplace add buwilliams/forge
+/plugin install forge@buwilliams-forge
+```
+
+**Option 2 — Clone and use `--plugin-dir`:**
+
+```bash
+git clone https://github.com/buwilliams/forge.git
+```
+
+Then pass `--plugin-dir` when starting Claude Code:
+```bash
+claude --plugin-dir /path/to/forge
+```
+
+Or add it to your project's `.claude/settings.json` to load it automatically:
+```json
+{
+  "pluginDirs": ["/path/to/forge"]
+}
+```
+
 ## Workflow
 
 1. **Write a design doc** — describe what to build and any non-negotiable constraints
