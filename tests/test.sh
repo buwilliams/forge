@@ -31,6 +31,7 @@ if [ "${1:-}" = "--reset" ]; then
   info "Removing generated files and forge state..."
   rm -rf \
     "$SIMPLE_DIR/.forge" \
+    "$SIMPLE_DIR/forge" \
     "$SIMPLE_DIR/src" \
     "$SIMPLE_DIR/bin" \
     "$SIMPLE_DIR/test" \
