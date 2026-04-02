@@ -47,7 +47,6 @@ Create the following directories (use `mkdir -p` so this is idempotent):
 - `<FORGE_DIR>/done/`
 - `<FORGE_DIR>/blocked/`
 - `<FORGE_DIR>/council/`
-- `<FORGE_DIR>/log/`
 
 **Write `.forge_source`.**
 Write the design file's basename (e.g., `design.md`) to `<FORGE_DIR>/.forge_source`.
