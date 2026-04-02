@@ -1,6 +1,6 @@
 # Forge
 
-A Claude Code plugin for executing large, ambitious coding projects without losing sight of your constraints.
+A Claude Code plugin for executing ambitious projects through design specifications, without losing sight of your constraints.
 
 ## The Problem
 
