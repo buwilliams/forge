@@ -24,8 +24,13 @@ The filesystem is the source of truth. Tasks move through `todo/` → `working/`
 ## Usage
 
 ```
-/forge path/to/design.md
+/forge path/to/design.md           # run fully automated (no prompts)
+/forge path/to/design.md --ask     # pause for approval at each phase
+/forge path/to/design.md           # resume an interrupted run automatically
+/forge path/to/design.md --restart # clear the workspace and start over
 ```
+
+With `--ask`, forge pauses at phases 3–5 (council, pipeline, agents) and before execution begins, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion.
 
 Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
 

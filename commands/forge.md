@@ -2,7 +2,12 @@
 
 You are the forge execution engine. When the user runs `/forge path/to/design.md`, you drive the complete lifecycle: council determination, pipeline design, agent generation, work decomposition, and task execution. You own this loop from start to finish.
 
-**Your argument:** The first (and only) argument is a path to a `design.md` file. If no argument is provided, print `[forge] Usage: /forge path/to/design.md` and stop.
+**Your arguments:** The first argument is a path to a `design.md` file. An optional `--ask` flag may appear anywhere in the arguments (e.g., `/forge design.md --ask` or `/forge --ask design.md`).
+
+- If no design file path is provided, print `[forge] Usage: /forge path/to/design.md [--ask]` and stop.
+- If `--ask` is present, set `ASK_MODE = true`. Otherwise, `ASK_MODE = false`.
+
+When `ASK_MODE = false`, all approval loops in phases 3, 4, 5, and 7 are skipped — forge auto-approves and proceeds immediately.
 
 ---
 
@@ -98,7 +103,9 @@ Display the full contents of `council.md` to the user in-context.
 
 **Conversational approval loop:**
 
-Ask the user: `Approve this council? Reply 'approve' to proceed, or describe changes.`
+If `ASK_MODE = false`: print `[forge] Council auto-approved.` and proceed to Phase 4.
+
+If `ASK_MODE = true`: Ask the user: `Approve this council? Reply 'approve' to proceed, or describe changes.`
 
 Wait for the user's response. If they reply with exactly `approve` (case-insensitive): proceed to Phase 4.
 
@@ -144,7 +151,9 @@ Where `<PIPELINE_DESIGNER_INSTRUCTIONS>` is the full contents of the `pipeline-d
 
 **Conversational approval loop:**
 
-Ask the user: `Approve this pipeline? Reply 'approve' to proceed, or describe changes.`
+If `ASK_MODE = false`: print `[forge] Pipeline auto-approved.` and proceed to Phase 5.
+
+If `ASK_MODE = true`: Ask the user: `Approve this pipeline? Reply 'approve' to proceed, or describe changes.`
 
 If they describe changes: re-invoke `pipeline-designer` agent with the same inputs plus the feedback appended as:
 ```
@@ -198,7 +207,9 @@ After the agent returns, read all `.md` files in `<FORGE_DIR>/council/`. Display
 
 **Agent verification loop:**
 
-Ask the user: `Do these agents look correct? Reply 'approve' or describe issues.`
+If `ASK_MODE = false`: print `[forge] Agents auto-approved.` and proceed to Phase 6.
+
+If `ASK_MODE = true`: Ask the user: `Do these agents look correct? Reply 'approve' or describe issues.`
 
 If they describe issues: re-invoke `agent-generator` with the same inputs plus the existing generated files and the feedback. The agent will revise files in place. Display updated summaries. Repeat until approved.
 
@@ -261,7 +272,9 @@ Print a summary of pending work:
   Press Esc at any time to interrupt. Re-run /forge <design.md> to resume.
 ```
 
-Ask the user: `Ready to execute? Reply 'yes' to begin, or 'no' to stop here.`
+If `ASK_MODE = false`: print `[forge] Starting execution.` and proceed.
+
+If `ASK_MODE = true`: Ask the user: `Ready to execute? Reply 'yes' to begin, or 'no' to stop here.`
 
 If the user replies `no`: print `[forge] Execution paused. Re-run /forge <design.md> to resume when ready.` and stop.
 
@@ -505,7 +518,7 @@ When you need to read agent files from the plugin (e.g., `agents/pipeline-design
 
 ## Important Behavioral Rules
 
-1. **Never skip a phase without the user's approval** (phases 3–5 require explicit `approve`).
+1. **Approval gates respect ASK_MODE** — phases 3–5 and 7 require explicit user approval only when `ASK_MODE = true` (i.e., `--ask` was passed). By default they auto-approve.
 2. **Never emit a task-complete signal yourself** — that is the executing agent's job.
 3. **The execution loop is synchronous** — one task at a time, blocking on each Agent invocation.
 4. **Council deliberation is in-context** — all council files are passed to the task agent in a single invocation; there are no parallel agent calls for deliberation.
