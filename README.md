@@ -33,6 +33,13 @@ With `--ask`, forge pauses at the council, pipeline, and agent generation phases
 
 Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
 
+**Testing forge itself:**
+
+```
+./tests/test.sh --reset  # wipe state, run forge, then verify
+./tests/test.sh          # verify only (after forge has already run)
+```
+
 ## Key Concepts
 
 **Global Constraints** — defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
@@ -48,14 +55,6 @@ Your design document should describe what you want to build, the tech stack, and
 **Task Context** — each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly — by execution time, everything relevant should be captured in the task and pipeline.
 
 **Not Just for Code** — Forge works for any file-based project. If no tech stack is detected, the council is inferred from the design document alone. Default roles (`programmer`, `tester`, `product-manager`) can be replaced during the approval step with whatever fits the project (e.g., `writer`, `editor`, `strategist`).
-
-## Tests
-
-```
-./tests/test.sh --reset
-```
-
-Wipes generated files and forge state, runs forge against `tests/simple/design.md`, then verifies forge completed cleanly and the generated code passes its node test suite. Run `./tests/test.sh` (no flags) to re-verify without re-running forge.
 
 ## Docs
 
