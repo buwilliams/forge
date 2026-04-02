@@ -4,14 +4,14 @@ A Claude Code plugin for executing ambitious projects through design specificati
 
 ## The Problem
 
-When coding agents tackle multi-step projects, requirements drift. An instruction like "no mocks or stubs" or "use real data only" gets buried in context and ignored by step 10. Forge fixes this.
+When agents tackle multi-step projects, requirements drift. An instruction like "no external dependencies" or "match the existing tone" gets buried in context and ignored by step 10. Forge fixes this.
 
 ## How It Works
 
 Forge takes a design document and runs it through a pipeline:
 
 1. **Council** — determines the agent roles (perspectives) needed for the project
-2. **Pipeline Design** — captures tech stack, global constraints, and quality bar
+2. **Pipeline Design** — captures the project's constraints, conventions, and quality bar
 3. **Agent Generation** — generates project-specific agents for the council
 4. **Plan Decomposition** — breaks work into small, self-contained tasks
 5. **Execution** — runs each task through a verify → save → confirm loop
@@ -21,7 +21,7 @@ The filesystem is the source of truth. Tasks move through `todo/` → `working/`
 
 ## Workflow
 
-1. **Write a design doc** — describe what to build, the tech stack, and any non-negotiable constraints
+1. **Write a design doc** — describe what to build and any non-negotiable constraints
 2. **Run forge** — `/forge design.md` works through the full pipeline automatically
 3. **If tasks block** — forge creates `design-blocked.md` summarizing each failure and its reason
 4. **Resolve the issues** — edit `design-blocked.md` to clarify requirements, add context, or adjust constraints
@@ -36,12 +36,12 @@ Open a Claude Code session in your project directory, then:
 ```
 /forge path/to/design.md           # run fully automated (no prompts)
 /forge path/to/design.md --ask     # pause for approval at each phase
-/forge path/to/design.md --clean # delete the .forge/ state and start over
+/forge path/to/design.md --clean   # delete the .forge/ state and start over
 ```
 
 With `--ask`, forge pauses at the council, pipeline, and agent generation phases, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion. Interrupted runs resume automatically on the next invocation.
 
-Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
+Your design document should describe what you want to build and any non-negotiable constraints (e.g., no external dependencies, match the existing voice and tone, all decisions must be reversible).
 
 **Testing forge itself:**
 
@@ -54,7 +54,7 @@ Your design document should describe what you want to build, the tech stack, and
 
 **Global Constraints** — defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
 
-**Council Deliberation** — before implementation, the task agent reasons through each council role's perspective (programmer, tester, product-manager, etc.) in a single context. This catches issues before code is written.
+**Council Deliberation** — before execution, the task agent reasons through each council role's perspective in a single context. This catches issues before work begins.
 
 **`council/*.md` files** — generated in Phase 3, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
 - **Phase 4 (Plan Decomposition):** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
