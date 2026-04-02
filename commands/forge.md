@@ -38,7 +38,7 @@ Let `FORGE_DIR` = `<PROJECT_ROOT>/.forge/<NAME>`.
 If `<FORGE_DIR>/` already exists, read `<FORGE_DIR>/.forge_source`. If that file contains a different basename than the current design file's basename, print `[forge] Error: directory name collision — '<NAME>' is already claimed by a different design file` and stop.
 
 **Check for explicit restart.**
-If the user's invocation included the flag `--restart` (e.g., `/forge design.md --restart`), clear the forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, `<FORGE_DIR>/hooks/`, `<FORGE_DIR>/skills/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
+If the user's invocation included the flag `--restart` (e.g., `/forge design.md --restart`), clear the forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
 
 **Create the directory tree.**
 Create the following directories (use `mkdir -p` so this is idempotent):
@@ -47,8 +47,6 @@ Create the following directories (use `mkdir -p` so this is idempotent):
 - `<FORGE_DIR>/done/`
 - `<FORGE_DIR>/blocked/`
 - `<FORGE_DIR>/council/`
-- `<FORGE_DIR>/hooks/`
-- `<FORGE_DIR>/skills/`
 - `<FORGE_DIR>/log/`
 
 **Write `.forge_source`.**
