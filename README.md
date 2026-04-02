@@ -54,11 +54,9 @@ Your design document should describe what you want to build, the tech stack, and
 
 ```
 ./tests/test.sh --reset
-# open tests/simple/ in Claude Code, then run: /forge design.md
-./tests/test.sh
 ```
 
-`--reset` wipes generated files and forge state. After running forge in Claude Code, `./tests/test.sh` verifies forge completed cleanly and the generated code passes its node test suite.
+Wipes generated files and forge state, runs forge against `tests/simple/design.md`, then verifies forge completed cleanly and the generated code passes its node test suite. Run `./tests/test.sh` (no flags) to re-verify without re-running forge.
 
 ## Docs
 

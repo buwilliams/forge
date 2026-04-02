@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
-# Forge test verifier — tests/simple
+# Forge automated test runner — tests/simple
 #
 # Usage:
-#   ./tests/test.sh          # verify forge output (run after /forge in Claude Code)
-#   ./tests/test.sh --reset  # wipe generated files and forge state, then exit
-#
-# Full test workflow:
-#   1. ./tests/test.sh --reset
-#   2. Open tests/simple/ in Claude Code and run: /forge design.md
-#   3. ./tests/test.sh
+#   ./tests/test.sh          # verify only (forge already ran)
+#   ./tests/test.sh --reset  # wipe state, run forge, then verify
 #
 # Run from the forge project root.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 SIMPLE_DIR="$SCRIPT_DIR/simple"
 FORGE_DIR="$SIMPLE_DIR/.forge/design"
 
@@ -41,16 +37,21 @@ if [ "${1:-}" = "--reset" ]; then
     "$SIMPLE_DIR/package.json" \
     "$SIMPLE_DIR/node_modules"
   pass "Reset complete"
-  echo ""
-  echo "Next: open tests/simple/ in Claude Code and run: /forge design.md"
-  exit 0
+
+  header "forge"
+  info "Running /forge design.md..."
+  cd "$SIMPLE_DIR"
+  claude -p "/forge design.md" \
+    --plugin-dir "$PROJECT_ROOT" \
+    --dangerously-skip-permissions
+  cd "$PROJECT_ROOT"
 fi
 
 # ── Verify Forge State ───────────────────────────────────────────────────────
 
 header "verify: forge state"
 
-[ -d "$FORGE_DIR" ] || fail ".forge/design/ not found — run /forge design.md in tests/simple/ first"
+[ -d "$FORGE_DIR" ] || fail ".forge/design/ not found — run ./tests/test.sh --reset first"
 
 DONE_COUNT=$(find "$FORGE_DIR/done" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 TODO_COUNT=$(find "$FORGE_DIR/todo" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
@@ -80,7 +81,7 @@ header "verify: node tests"
 
 cd "$SIMPLE_DIR"
 node --test test/cli.test.js
-cd "$SCRIPT_DIR/.."
+cd "$PROJECT_ROOT"
 
 echo ""
 echo -e "${GREEN}All checks passed.${NC}"
