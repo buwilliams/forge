@@ -81,6 +81,7 @@ Your design document should describe what you want to build and any non-negotiab
 
 - [goal.md](docs/goal.md) — problem statement and motivation
 - [plan.md](docs/plan.md) — full implementation blueprint
+- [spec-kit.md](docs/spec-kit.md) — using spec-kit with Forge for spec-driven development
 
 ## Requirements
 
