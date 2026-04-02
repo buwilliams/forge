@@ -8,29 +8,28 @@ When coding agents tackle multi-step projects, requirements drift. An instructio
 
 ## How It Works
 
-Forge takes a design document and runs it through an 8-phase pipeline:
+Forge takes a design document and runs it through a pipeline:
 
-1. **Init** — validates the environment and sets up a workspace
-2. **Resume Check** — skips to the right phase if the run was interrupted
-3. **Council** — approves the agent roles (perspectives) needed for the project
-4. **Pipeline Design** — captures tech stack, global constraints, and quality bar
-5. **Agent Generation** — generates project-specific agents for the council
-6. **Plan Decomposition** — breaks work into small, self-contained tasks
-7. **Execution** — runs each task through a verify → save → confirm loop
-8. **Report** — summarizes what was built
+1. **Council** — determines the agent roles (perspectives) needed for the project
+2. **Pipeline Design** — captures tech stack, global constraints, and quality bar
+3. **Agent Generation** — generates project-specific agents for the council
+4. **Plan Decomposition** — breaks work into small, self-contained tasks
+5. **Execution** — runs each task through a verify → save → confirm loop
+6. **Report** — summarizes what was built
 
-The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`), so runs are always resumable and fully visible.
+The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and forge picks up where it left off.
 
 ## Usage
+
+Open a Claude Code session in your project directory, then:
 
 ```
 /forge path/to/design.md           # run fully automated (no prompts)
 /forge path/to/design.md --ask     # pause for approval at each phase
-/forge path/to/design.md           # resume an interrupted run automatically
 /forge path/to/design.md --restart # clear the workspace and start over
 ```
 
-With `--ask`, forge pauses at phases 3–5 (council, pipeline, agents) and before execution begins, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion.
+With `--ask`, forge pauses at the council, pipeline, and agent generation phases, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion. Interrupted runs resume automatically on the next invocation.
 
 Your design document should describe what you want to build, the tech stack, and any non-negotiable constraints (e.g., no external dependencies, all tests use real data, strict TypeScript).
 
