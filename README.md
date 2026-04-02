@@ -50,6 +50,14 @@ Your design document should describe what you want to build, the tech stack, and
 
 **Not Just for Code** — Forge works for any file-based project. If no tech stack is detected, the council is inferred from the design document alone. Default roles (`programmer`, `tester`, `product-manager`) can be replaced during the approval step with whatever fits the project (e.g., `writer`, `editor`, `strategist`).
 
+## Tests
+
+```
+./tests/test.sh --reset
+```
+
+Wipes generated files and forge state, runs forge against `tests/simple/design.md`, then verifies forge completed cleanly and the generated code passes its test suite.
+
 ## Docs
 
 - [goal.md](docs/goal.md) — problem statement and motivation
