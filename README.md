@@ -16,7 +16,7 @@ Forge takes a design document and runs it through a pipeline:
 2. **Pipeline Design** — captures the project's constraints, conventions, and quality bar
 3. **Agent Generation** — generates project-specific agents for the council
 4. **Plan Decomposition** — breaks work into small, self-contained tasks
-5. **Execution** — runs each task through a verify → save → confirm loop
+5. **Execution** — runs each task through an experiment → verify → save loop, syncing with the remote between tasks
 6. **Report** — summarizes what was built
 
 The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and forge picks up where it left off.
@@ -66,6 +66,10 @@ Your design document should describe what you want to build and any non-negotiab
 **`council/*.md` files** — generated in Phase 3, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
 - **Phase 4 (Plan Decomposition):** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
 - **Phase 5 (Execution):** the file matching the task's role becomes that agent's primary instructions. All council files are also passed together so the agent can deliberate from every perspective before acting.
+
+**Dynamic Verification** — every task that produces output with observable behavior includes a check that exercises it directly: starting a server and calling an endpoint, invoking a CLI with real arguments, running a script against real data. Static checks (file exists, pattern absent) confirm structure; dynamic checks confirm the output actually works.
+
+**Sync** — before each task, forge pulls the latest changes so work done by others is visible. After each task completes, forge pushes so others receive it immediately. If a pull fails (conflict, no connectivity), the run stops cleanly for manual resolution. If there is no remote, sync is skipped silently.
 
 **Attempt Tracking** — each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
 

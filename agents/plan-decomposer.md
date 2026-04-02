@@ -27,6 +27,7 @@ Read `pipeline.md` in its entirety. Extract:
 - `## Global Constraints` — every constraint listed here must appear as a concrete verification step in every code-writing task
 - `## Tech Stack` — the commands for test, typecheck, lint, and build
 - `## Completion Condition` — use this to validate your decomposition covers everything
+- `## Runtime Verification` — the invocation infrastructure (start command, ready check, stop command, environment) used to build runtime verification steps for each task
 
 Read each council agent file from `<forge_dir>/council/`. Note each role's name and purpose (from the `## DELIBERATION mode — Perspective` line). This tells you what roles are available for task assignment.
 
@@ -59,7 +60,7 @@ coverage/
 .nyc_output/
 ```
 
-If `.gitignore` does not exist or is missing entries from the above list, create a task (numbered 00000) to create or augment it. This task uses the `programmer` role and must be the first task. The Save Command `git add .gitignore && git commit -m "task-00000: ensure .gitignore covers secrets and build artifacts"` (not `git add -A` — only touch `.gitignore`).
+If `.gitignore` does not exist or is missing entries from the above list, create a task (numbered 00000) to create or augment it. This task uses the `programmer` role and must be the first task. The filename is `00000_<slug>_task.md`. The Save Command `git add .gitignore && git commit -m "task-00000: ensure .gitignore covers secrets and build artifacts"` (not `git add -A` — only touch `.gitignore`).
 
 If `.gitignore` already covers all required entries, skip this task and start numbering at 00000 for the first real work task.
 
@@ -90,7 +91,9 @@ Guidelines for task ordering:
 
 ## Step 4: Write Each Task File
 
-For each task, write a file to `<forge_dir>/todo/<NNNNN>_task.md` where `<NNNNN>` is a zero-padded 5-digit number starting from 00000.
+**Derive the slug** from `<forge_dir>`: take the last path component (the directory name). For example, if `<forge_dir>` is `/project/.forge/my_design`, the slug is `my_design`.
+
+For each task, write a file to `<forge_dir>/todo/<NNNNN>_<slug>_task.md` where `<NNNNN>` is a zero-padded 5-digit number starting from 00000 and `<slug>` is the value derived above.
 
 **Critical rules for task files:**
 - NO YAML frontmatter (no `---` delimiters at the top)
@@ -134,8 +137,10 @@ This section must be complete enough that the agent never needs to guess what ex
   - `<test command>` exits 0
   - `<typecheck command>` exits 0
   - `<lint command>` exits 0 (if applicable to this task)
+- Dynamic check (run via Bash — see Step 5b):
+  - The specific output produced by this task behaves correctly when exercised
 
-For EVERY code-writing task: one verification step per applicable Global Constraint from pipeline.md.>
+For EVERY productive task: one verification step per applicable Global Constraint from pipeline.md, and one dynamic check per Step 5b (unless exempt).>
 
 ## Done When
 - [ ] <Objective fully implemented — specific observable state>
@@ -153,7 +158,7 @@ git add -A && git commit -m "task-<NNNNN>: <title>"
 
 This step is mandatory. Do not skip it.
 
-Read `## Global Constraints` from `pipeline.md`. For each constraint, determine if it applies to this task (most constraints apply to all code-writing tasks).
+Read `## Global Constraints` from `pipeline.md`. For each constraint, determine if it applies to this task (most constraints apply to all tasks that produce output governed by that constraint).
 
 For each applicable constraint, add a concrete, checkable verification step to the task's `## Verification` section. The verification step must be specific — not "follow the no-mocks constraint" but:
 
@@ -167,6 +172,62 @@ For each applicable constraint, add a concrete, checkable verification step to t
 | `npm run lint` exits 0 | `npm run lint` exits 0 |
 
 Constraints are never left implicit. If a constraint applies to a task and there is no verification step for it, you have made an error. Add it.
+
+---
+
+## Step 5b: Add Dynamic Verification to Every Productive Task
+
+This step is mandatory. Do not skip it.
+
+Read `## Dynamic Verification` from `pipeline.md`. For every task that produces an output with observable behavior, add a dynamic check to its `## Verification` section. The check must exercise the specific thing this task produced — not a generic health check, not a full suite run — using real inputs and verifying real output.
+
+The check must:
+- Use the exercise command and invocation infrastructure from `## Dynamic Verification` in `pipeline.md`
+- Be scoped to what this task specifically produced or changed
+- Verify observable output or side effects — not just exit code, but actual content, state, or behavior
+- Include setup (start) and teardown (stop) if the exercise model requires a persistent process
+
+**Format for projects that require a persistent process (services, workers):**
+
+Write the dynamic check as a single script block so the verifier runs it atomically:
+
+```
+- Dynamic: start, exercise <specific feature this task produced>, verify output, stop:
+  ```bash
+  <ENV> <exercise command> &
+  APP_PID=$!
+  for i in $(seq 1 15); do <ready check> 2>/dev/null && break; sleep 1; [ $i -eq 15 ] && kill $APP_PID && exit 1; done
+  <command that exercises and verifies the specific output of this task>
+  kill $APP_PID
+  ```
+```
+
+**Format for all other projects:**
+
+```
+- Dynamic: <exercise command with real inputs> and verify <expected observable output or state>
+```
+
+**What "exercises the specific output" means — examples across project types:**
+
+| Task produces | Dynamic check |
+|---|---|
+| HTTP endpoint | Start server, call endpoint with real data, verify response body contains expected fields |
+| CLI command | Invoke binary with real arguments, verify stdout matches expected output |
+| Library function | Run a script that calls the function with real inputs and asserts the return value |
+| Data transformation | Run pipeline with real input file, verify output file contains correct records |
+| Config file (nginx, k8s, etc.) | Apply config to test environment, verify the expected behavior or state |
+| Shell/automation script | Execute with real inputs, verify the side effects (files created, records written, etc.) |
+| SQL migration | Apply to a real test database, verify the resulting schema or data |
+| Document / template | Render or process it, verify the output meets the structural specification |
+
+**Exemptions — tasks where no dynamic check is possible or meaningful:**
+
+- Tasks whose only output is planning, research, or reference material with no applicable form
+- Tasks that only modify `.gitignore`, lock files, or similar tooling artifacts that have no behavioral output
+- Tasks that exist solely to reorganize or rename existing files without changing behavior
+
+When in doubt, include the dynamic check. The question is: "Is there any way to exercise this output and observe whether it works?" If yes, do it.
 
 ---
 
@@ -218,10 +279,11 @@ After writing all task files, write `<forge_dir>/plan.md` with this structure:
 After writing all files, perform this final check:
 
 1. Count task files in `<forge_dir>/todo/` — does the number match the rows in `plan.md`?
-2. Do all task files use 5-digit zero-padded names with no gaps? (00000, 00001, 00002, ...)
+2. Do all task files use the format `<NNNNN>_<slug>_task.md` with 5-digit zero-padded numbers and no gaps? (00000_<slug>_task.md, 00001_<slug>_task.md, ...)
 3. Does every task file have all required sections: Role, Objective, Context, Steps, Verification, Done When, Save Command?
 4. Does every task file have NO YAML frontmatter, NO metadata fields?
 5. Does every code-writing task have at least one verification step per applicable Global Constraint?
+5b. Does every productive task (one that produces output with observable behavior) have a dynamic check (labeled "Dynamic:") in its `## Verification` section, or an explicit reason it is exempt?
 6. Is the `.gitignore` task first (or confirmed unnecessary)?
 7. Does completing all tasks in order produce the system described in `design.md`?
 

@@ -90,6 +90,37 @@ Synthesize everything above into a coherent pipeline specification.
 
 ---
 
+## Step 4b: Define Dynamic Verification
+
+Every task that produces an output must verify that the output works when exercised — not just that it exists or passes static checks, but that it actually behaves correctly when applied, run, or used. To enable this, define how the project's output is exercised.
+
+**Identify the exercise model** from `design.md`:
+
+| Project type | How to exercise it |
+|---|---|
+| Software service | Start the process → wait until ready → call it → stop |
+| Software CLI | Invoke with real arguments → check output and exit code |
+| Software library | Run a script that imports and calls the API with real inputs |
+| Data pipeline | Run the pipeline with real input data → check output data |
+| Configuration / infrastructure | Apply the config → verify the system state changed |
+| Document / content | Process or render it → check the output meets the specification |
+| Script or automation | Execute with real inputs → verify outcomes and side effects |
+| Pure research / planning | No dynamic exercise possible — omit this section entirely |
+
+**Define the following and write them to `pipeline.md` under `## Dynamic Verification`:**
+
+1. **Exercise command** — how to invoke, apply, or run the primary output of the project. For services: the start command. For CLIs: the invocation pattern. For data pipelines: the run command. For configs: the apply command. Omit if the project has no executable or applicable output.
+
+2. **Ready check** *(services only)* — a single command that exits 0 when the service is accepting input. Example: `curl -sf http://localhost:3000/health`. Omit for all other types.
+
+3. **Teardown** *(services and workers only)* — how to stop the running process after exercising. Typically: `kill $APP_PID`. Omit for all other types.
+
+4. **Environment** *(optional)* — any variables or setup required before exercising (e.g., `TEST_DB=./test.db`, `export API_KEY=...`). Omit if none.
+
+These values are referenced by `plan-decomposer` when writing dynamic verification steps for each task. They define the invocation infrastructure — not what to test. Each task defines its own checks based on what it produced.
+
+---
+
 ## Step 5: Write pipeline.md
 
 Write the output to the path specified in your invocation. Use exactly this structure:
@@ -109,7 +140,7 @@ Every task follows this lifecycle, without exception:
 No task may emit `<task-complete>` before successfully completing Verify and Save.
 
 ## Global Constraints
-The following rules apply to every task without exception. The plan-decomposer must include a concrete verification step for each applicable constraint in every code-writing task.
+The following rules apply to every task without exception. The plan-decomposer must include a concrete verification step for each applicable constraint in every task that produces output governed by that constraint.
 
 - <Constraint 1>
 - <Constraint 2>
@@ -121,6 +152,12 @@ The following rules apply to every task without exception. The plan-decomposer m
 
 ## Completion Condition
 <Concrete observable state that defines project completion. E.g., "All task files are in done/. Zero task files in todo/, working/, or blocked/. `npm run build` exits 0. `npm test` exits 0. `npm run typecheck` exits 0.">
+
+## Dynamic Verification
+- **Exercise command:** `<how to invoke, apply, or run the output>` *(omit if no executable or applicable output)*
+- **Ready check:** `<command that exits 0 when ready to accept input>` *(services only)*
+- **Teardown:** `kill $APP_PID` *(services and workers only)*
+- **Environment:** `<KEY=value ...>` *(omit if none required)*
 
 ## Tech Stack
 - **Language:** <e.g., TypeScript 5.x>

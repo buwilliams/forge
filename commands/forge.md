@@ -290,6 +290,25 @@ Maintain the following in-context (these are NOT written to files):
 
 Repeat until no tasks remain in `<FORGE_DIR>/todo/` or `<FORGE_DIR>/working/`:
 
+### Step 0: Sync
+
+At the start of every iteration — including resumes — pull the latest changes from the remote so that work done by others is visible before this task begins.
+
+Run:
+```bash
+git pull --rebase
+```
+
+**If the pull succeeds:** continue to Step 1.
+
+**If the pull fails** (non-zero exit, including merge conflicts): stop the loop immediately. Print:
+```
+[forge] git pull --rebase failed. Resolve conflicts or connectivity issues, then re-run /forge <design.md> to resume.
+```
+Do not proceed. The task state is intact — resuming after the issue is resolved is safe.
+
+**If there is no remote** (`git remote` returns empty): skip this step silently and continue to Step 1.
+
 ### Step 1: Pick Task
 
 Check `<FORGE_DIR>/working/` for any `*.md` files. Use Glob `<FORGE_DIR>/working/*.md`.
@@ -422,7 +441,13 @@ Parse the verifier's output:
 - Move task to done: `mv <FORGE_DIR>/working/<taskname>.md <FORGE_DIR>/done/<taskname>.md`
 - Print: `[forge] Task <taskname> complete. ✓`
 - Remove `<taskname>` from `ATTEMPT_MAP` (reset attempt count)
-- Continue to next iteration
+- Push to remote:
+  ```bash
+  git push
+  ```
+  - If the push succeeds: print `[forge] Pushed.` and continue to next iteration.
+  - If the push is rejected (remote has commits not in local): run `git pull --rebase && git push`. If that succeeds: print `[forge] Pulled and pushed.` and continue. If it fails: print `[forge] Push failed after rebase — resolve manually, then re-run to resume.` and stop the loop.
+  - If there is no remote: skip silently and continue to next iteration.
 
 **Case B: Output contains `<verify-fail>REASON</verify-fail>`**
 - Extract the REASON

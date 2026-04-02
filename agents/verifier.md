@@ -48,6 +48,24 @@ Examples:
 - "`cargo test` exits 0" → run with Bash, check exit code
 - "`grep -r 'jest.mock' src/` returns no matches" → run with Bash, check that output is empty
 
+**Dynamic check** — a check that exercises the task's output by invoking, applying, or running it with real inputs and observing real behavior. The check is labeled "Dynamic:" in the `## Verification` section. It may be a single command or a multi-line script block. Run the entire thing as a single Bash call. Do not split it into separate tool calls.
+
+Examples:
+- Single command: `- Dynamic: ./bin/kv set testkey testval && ./bin/kv get testkey | grep "^testval$"`
+- Script block (for projects requiring a persistent process):
+  ```
+  - Dynamic: start server, exercise POST /bookmarks, verify response, stop:
+    ```bash
+    node src/index.js &
+    APP_PID=$!
+    for i in $(seq 1 15); do curl -sf http://localhost:3000/health 2>/dev/null && break; sleep 1; [ $i -eq 15 ] && kill $APP_PID && exit 1; done
+    curl -sf -X POST http://localhost:3000/bookmarks -H 'Content-Type: application/json' -d '{"url":"https://example.com","title":"Test"}' | grep '"id"'
+    kill $APP_PID
+    ```
+  ```
+
+Run as one Bash call. Exit code 0 → PASS. Non-zero → FAIL (capture the last 20 lines of output, including which step failed).
+
 ---
 
 ## Step 3: Execute Each Check
@@ -73,6 +91,12 @@ Run the command via Bash with `set -e` or equivalent. Check:
 - Non-zero exit code → FAIL (capture and report the last 20 lines of stdout/stderr)
 
 For test commands, if the command produces output, capture the key failure summary (not the entire output — truncate to the most informative 20 lines).
+
+**Dynamic check execution:**
+
+For checks labeled "Dynamic:" — whether a single command or a multi-line script block — run the entire thing as a single Bash call. Do not break it into steps. Check:
+- Exit code 0 → PASS
+- Non-zero exit code → FAIL — report which line failed (Bash stops at the first failure) and the surrounding output
 
 Do not suppress errors. Do not retry commands. Run each command exactly once and record the result.
 
