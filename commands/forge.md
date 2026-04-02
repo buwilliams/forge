@@ -6,13 +6,10 @@ You are the forge execution engine. When the user runs `/forge path/to/design.md
 
 - `--ask` — enable interactive approval at each phase
 - `--restart` — clear the .forge state and start over
-- `--blocked` — generate a new design doc from blocked tasks (see below)
 
-If no design file path is provided, print `[forge] Usage: /forge path/to/design.md [--ask|--restart|--blocked]` and stop.
+If no design file path is provided, print `[forge] Usage: /forge path/to/design.md [--ask|--restart]` and stop.
 
 Set `ASK_MODE = true` if `--ask` is present, otherwise `ASK_MODE = false`. When `ASK_MODE = false`, all approval loops in phases 3, 4, 5, and 7 are skipped — forge auto-approves and proceeds immediately.
-
-**If `--blocked` is present:** after completing Phase 1 Init, skip all other phases and run the blocked design doc generation flow instead (described at the end of this file).
 
 ---
 
@@ -463,17 +460,59 @@ Display a completion summary:
   Done:    <N> tasks
   Blocked: <M> tasks
 
-<If M > 0:>
-  Blocked tasks (review and move back to todo/ to retry):
-  <list each file in <FORGE_DIR>/blocked/ that ends in .md and does NOT end in .reason.md>
-
 <If M == 0:>
   All tasks completed successfully.
 ```
 
-If there are blocked tasks, print:
+**If there are blocked tasks**, automatically generate a blocked design doc:
+
+Derive `BLOCKED_DESIGN_PATH` by taking the original design file path, stripping `.md`, and appending `-blocked.md`. For example: `path/to/design.md` → `path/to/design-blocked.md`.
+
+For each blocked task file `<taskname>.md` in `<FORGE_DIR>/blocked/` (excluding `.reason.md` files), read its contents and read `<FORGE_DIR>/blocked/<taskname>.reason.md` if it exists.
+
+Write `BLOCKED_DESIGN_PATH` with the following structure:
+
 ```
-[forge] To address blocked tasks: run /forge <design.md> --blocked to generate a new design doc targeting the failures.
+# Blocked Tasks — <original design filename>
+
+This design document was generated automatically by forge at the end of a run.
+It targets only the tasks that failed. Review and edit this file to address
+the blocking reasons, then run `/forge <blocked-design-path>` to retry.
+
+## Context
+
+Original design: <original design file path>
+Forge run directory: <FORGE_DIR>
+
+## Blocked Tasks
+
+<For each blocked task:>
+### <taskname>
+
+**Task:**
+<full contents of the task file>
+
+**Block reason:**
+<contents of .reason.md, or "No reason recorded." if absent>
+
+---
+</For each>
+
+## Instructions for Retry
+
+Review each blocked task and its reason above. Edit this file to:
+- Clarify requirements that were ambiguous
+- Remove constraints that caused failures
+- Add context that would help the agent succeed
+- Split tasks that were too large
+
+When ready, run: `/forge <BLOCKED_DESIGN_PATH>`
+```
+
+Print:
+```
+[forge] Blocked design doc written to <BLOCKED_DESIGN_PATH>
+[forge] Review and edit it, then run: /forge <BLOCKED_DESIGN_PATH>
 ```
 
 ---
@@ -488,7 +527,7 @@ If there are blocked tasks, print:
 - **council/ has no agent file for a task's role:** Use `task-executor.md` silently (no user-facing error).
 - **working/ contains multiple files on resume:** Use the lexicographically first one. This should not happen under normal operation but handle it gracefully.
 - **User presses Esc during execution:** The current working/ file remains as a resume marker. The next `/forge design.md` invocation will detect it in Phase 2 and resume.
-- **Blocked tasks at end of run:** They are listed in the report. The user should run `/forge <design.md> --blocked` to generate a new design doc targeting the failures.
+- **Blocked tasks at end of run:** A `<design>-blocked.md` is generated automatically. The user edits it and runs `/forge <design>-blocked.md` to retry.
 
 ---
 
@@ -528,66 +567,3 @@ When you need to read agent files from the plugin (e.g., `agents/pipeline-design
 6. **Move files atomically** — always use `mv`, never copy-then-delete, to avoid partial states.
 7. **The verifier is independent** — it re-checks from scratch; it does not trust the task agent's self-reported verification.
 8. **Attempt counts reset on successful completion** — `ATTEMPT_MAP` entry is removed when a task moves to `done/`.
-
----
-
-## --blocked: Generate a Design Doc from Blocked Tasks
-
-When `--blocked` is passed, forge generates a new design document targeting only the blocked tasks from the previous run. This is the intended workflow for addressing failures without re-running completed work.
-
-**Check for blocked tasks.**
-Glob `<FORGE_DIR>/blocked/*.md`, excluding files ending in `.reason.md`. If no blocked tasks exist, print `[forge] No blocked tasks found in <FORGE_DIR>/blocked/` and stop.
-
-**Read blocked tasks and reasons.**
-For each blocked task file `<taskname>.md`:
-- Read the task file contents
-- Read `<FORGE_DIR>/blocked/<taskname>.reason.md` if it exists (may be absent)
-
-**Derive the output path.**
-Take the original design file path, strip the `.md` extension, append `-blocked.md`.
-For example: `path/to/design.md` → `path/to/design-blocked.md`.
-
-Let `BLOCKED_DESIGN_PATH` = that path.
-
-**Generate the blocked design doc.**
-Write `BLOCKED_DESIGN_PATH` with the following structure:
-
-```
-# Blocked Tasks — <original design filename>
-
-This design document was generated by `/forge <design.md> --blocked`.
-It targets only the tasks that failed in the previous run.
-Review and edit this file to address the blocking reasons, then run `/forge <blocked-design-path>` to retry.
-
-## Context
-
-Original design: <original design file path>
-Forge run directory: <FORGE_DIR>
-
-## Blocked Tasks
-
-<For each blocked task:>
-### <taskname>
-
-**Task:**
-<full contents of the task file>
-
-**Block reason:**
-<contents of .reason.md, or "No reason recorded." if absent>
-
----
-</For each>
-
-## Instructions for Retry
-
-Review each blocked task and its reason above. Edit this file to:
-- Clarify requirements that were ambiguous
-- Remove constraints that caused failures
-- Add context that would help the agent succeed
-- Split tasks that were too large
-
-When ready, run: `/forge <BLOCKED_DESIGN_PATH>`
-```
-
-Print: `[forge] Blocked design doc written to <BLOCKED_DESIGN_PATH>`
-Print: `[forge] Review and edit it, then run: /forge <BLOCKED_DESIGN_PATH>`
