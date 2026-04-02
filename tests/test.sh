@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
-# Forge automated test runner — tests/simple
+# Forge test verifier — tests/simple
 #
 # Usage:
-#   ./tests/test.sh                  # verify only (forge already ran)
-#   ./tests/test.sh --run            # run forge, then verify
-#   ./tests/test.sh --reset          # clean generated files + forge state, then run forge + verify
-#   ./tests/test.sh --reset --verify # clean only, skip forge run, just verify (useful for debugging)
+#   ./tests/test.sh          # verify forge output (run after /forge in Claude Code)
+#   ./tests/test.sh --reset  # wipe generated files and forge state, then exit
 #
-# Flags:
-#   --run     run forge via `claude -p` before verifying
-#   --reset   wipe generated files and .forge/ state before proceeding
-#   --verify  skip forge run even if --reset was passed (verify only after reset)
+# Full test workflow:
+#   1. ./tests/test.sh --reset
+#   2. Open tests/simple/ in Claude Code and run: /forge design.md
+#   3. ./tests/test.sh
 #
 # Run from the forge project root.
 
@@ -30,21 +28,9 @@ fail()  { echo -e "  ${RED}✗${NC} $1"; exit 1; }
 info()  { echo -e "  ${YELLOW}→${NC} $1"; }
 header(){ echo -e "\n${YELLOW}[$1]${NC}"; }
 
-RUN_FORGE=false
-RESET=false
-VERIFY_ONLY=false
-
-for arg in "$@"; do
-  case $arg in
-    --run)    RUN_FORGE=true ;;
-    --reset)  RESET=true; RUN_FORGE=true ;;
-    --verify) VERIFY_ONLY=true; RUN_FORGE=false ;;
-  esac
-done
-
 # ── Reset ────────────────────────────────────────────────────────────────────
 
-if [ "$RESET" = true ]; then
+if [ "${1:-}" = "--reset" ]; then
   header "reset"
   info "Removing generated files and forge state..."
   rm -rf \
@@ -55,23 +41,16 @@ if [ "$RESET" = true ]; then
     "$SIMPLE_DIR/package.json" \
     "$SIMPLE_DIR/node_modules"
   pass "Reset complete"
-fi
-
-# ── Run Forge ────────────────────────────────────────────────────────────────
-
-if [ "$RUN_FORGE" = true ] && [ "$VERIFY_ONLY" = false ]; then
-  header "forge"
-  info "Running /forge design.md from tests/simple..."
-  cd "$SIMPLE_DIR"
-  claude -p "/forge design.md"
-  cd "$SCRIPT_DIR/.."
+  echo ""
+  echo "Next: open tests/simple/ in Claude Code and run: /forge design.md"
+  exit 0
 fi
 
 # ── Verify Forge State ───────────────────────────────────────────────────────
 
 header "verify: forge state"
 
-[ -d "$FORGE_DIR" ] || fail ".forge/design/ directory not found — has forge been run?"
+[ -d "$FORGE_DIR" ] || fail ".forge/design/ not found — run /forge design.md in tests/simple/ first"
 
 DONE_COUNT=$(find "$FORGE_DIR/done" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 TODO_COUNT=$(find "$FORGE_DIR/todo" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
@@ -79,7 +58,7 @@ BLOCKED_COUNT=$(find "$FORGE_DIR/blocked" -name "*.md" ! -name "*.reason.md" 2>/
 
 [ "$DONE_COUNT" -gt 0 ] || fail "No tasks in done/ — forge may not have completed"
 [ "$TODO_COUNT" -eq 0 ] || fail "$TODO_COUNT task(s) still in todo/"
-[ "$BLOCKED_COUNT" -eq 0 ] || fail "$BLOCKED_COUNT task(s) in blocked/ — check .forge/design/blocked/*.reason.md"
+[ "$BLOCKED_COUNT" -eq 0 ] || fail "$BLOCKED_COUNT task(s) blocked — check .forge/design/blocked/*.reason.md"
 
 pass "$DONE_COUNT tasks completed, 0 blocked"
 
@@ -87,9 +66,9 @@ pass "$DONE_COUNT tasks completed, 0 blocked"
 
 header "verify: generated files"
 
-[ -f "$SIMPLE_DIR/src/store.js" ]      || fail "src/store.js not found"
-[ -f "$SIMPLE_DIR/bin/kv.js" ]         || fail "bin/kv.js not found"
-[ -f "$SIMPLE_DIR/test/cli.test.js" ]  || fail "test/cli.test.js not found"
+[ -f "$SIMPLE_DIR/src/store.js" ]     || fail "src/store.js not found"
+[ -f "$SIMPLE_DIR/bin/kv.js" ]        || fail "bin/kv.js not found"
+[ -f "$SIMPLE_DIR/test/cli.test.js" ] || fail "test/cli.test.js not found"
 
 pass "src/store.js"
 pass "bin/kv.js"
