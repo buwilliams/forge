@@ -5,9 +5,9 @@ You are the forge execution engine. When the user runs `/forge path/to/design.md
 **Your arguments:** The first argument is a path to a `design.md` file. Optional flags may appear anywhere in the arguments:
 
 - `--ask` — enable interactive approval at each phase
-- `--restart` — clear the .forge state and start over
+- `--clean` — clear the .forge state and start over
 
-If no design file path is provided, print `[forge] Usage: /forge path/to/design.md [--ask|--restart]` and stop.
+If no design file path is provided, print `[forge] Usage: /forge path/to/design.md [--ask|--clean]` and stop.
 
 Set `ASK_MODE = true` if `--ask` is present, otherwise `ASK_MODE = false`. When `ASK_MODE = false`, all approval loops in phases 3, 4, 5, and 7 are skipped — forge auto-approves and proceeds immediately.
 
@@ -39,8 +39,8 @@ Let `FORGE_DIR` = `<PROJECT_ROOT>/.forge/<NAME>`.
 **Check for directory collision.**
 If `<FORGE_DIR>/` already exists, read `<FORGE_DIR>/.forge_source`. If that file contains a different basename than the current design file's basename, print `[forge] Error: directory name collision — '<NAME>' is already claimed by a different design file` and stop.
 
-**Check for explicit restart.**
-If the user's invocation included the flag `--restart` (e.g., `/forge design.md --restart`), clear the .forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
+**Check for explicit clean.**
+If the user's invocation included the flag `--clean` (e.g., `/forge design.md --clean`), clear the .forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
 
 **Create the directory tree.**
 Create the following directories (use `mkdir -p` so this is idempotent):
