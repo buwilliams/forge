@@ -22,10 +22,11 @@ The filesystem is the source of truth. Tasks move through `todo/` → `working/`
 ## Workflow
 
 1. **Write a design doc** — describe what to build and any non-negotiable constraints
-2. **Run forge** — `/forge design.md` works through the full pipeline automatically
-3. **If tasks block** — forge creates `design-blocked.md` summarizing each failure and its reason
-4. **Resolve the issues** — edit `design-blocked.md` to clarify requirements, add context, or adjust constraints
-5. **Run forge again** — `/forge design-blocked.md` starts a fresh run targeting only the failures
+2. **Open a Claude Code session** — in your project directory
+3. **Run forge** — `/forge design.md` works through the full pipeline automatically
+4. **If tasks block** — forge creates `design-blocked.md` summarizing each failure and its reason
+5. **Resolve the issues** — edit `design-blocked.md` to clarify requirements, add context, or adjust constraints
+6. **Run forge again** — `/forge design-blocked.md` starts a fresh run targeting only the failures
 
 Always forward — completed work is never re-run.
 
