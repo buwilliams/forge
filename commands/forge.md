@@ -28,7 +28,7 @@ Run `pwd` via Bash. That output is `PROJECT_ROOT`. Do NOT use `git rev-parse --s
 **Ensure the project is a git repository.**
 Check whether `.git/` exists at `PROJECT_ROOT` using Bash (`test -d "$PROJECT_ROOT/.git"`). If it does not exist, run `git init "$PROJECT_ROOT"`. If `git init` fails, print `[forge] Error: could not initialize a git repository here` and stop.
 
-**Derive the forge directory name.**
+**Derive the .forge directory name.**
 Take the basename of the design file path, strip the `.md` extension, replace every non-alphanumeric character (anything that is not `[a-z0-9]`) with an underscore, collapse consecutive underscores into one, strip leading/trailing underscores, and lowercase the result. For example: `My Cool Design.md` → `my_cool_design`, `api-v2.md` → `api_v2`, `design.md` → `design`.
 
 Let `NAME` = that sanitized string.
@@ -38,7 +38,7 @@ Let `FORGE_DIR` = `<PROJECT_ROOT>/.forge/<NAME>`.
 If `<FORGE_DIR>/` already exists, read `<FORGE_DIR>/.forge_source`. If that file contains a different basename than the current design file's basename, print `[forge] Error: directory name collision — '<NAME>' is already claimed by a different design file` and stop.
 
 **Check for explicit restart.**
-If the user's invocation included the flag `--restart` (e.g., `/forge design.md --restart`), clear the forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
+If the user's invocation included the flag `--restart` (e.g., `/forge design.md --restart`), clear the .forge directory: delete everything inside `<FORGE_DIR>/todo/`, `<FORGE_DIR>/working/`, `<FORGE_DIR>/done/`, `<FORGE_DIR>/blocked/`, `<FORGE_DIR>/council/`, and delete `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, `<FORGE_DIR>/plan.md`. Then proceed from Phase 3.
 
 **Create the directory tree.**
 Create the following directories (use `mkdir -p` so this is idempotent):
@@ -170,7 +170,7 @@ Read and display the revised `pipeline.md`. Repeat until the user approves.
 
 Print: `[forge] Generating project agents...`
 
-Read `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, and the design file. Invoke the `agent-generator` agent using the Agent tool. Pass it all three documents plus the forge dir path.
+Read `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, and the design file. Invoke the `agent-generator` agent using the Agent tool. Pass it all three documents plus the .forge dir path.
 
 **Agent invocation prompt template:**
 ```
