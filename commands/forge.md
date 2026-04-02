@@ -167,7 +167,7 @@ Read and display the revised `pipeline.md`. Repeat until the user approves.
 
 ---
 
-## Phase 5: Generate Agents/Hooks/Skills
+## Phase 5: Generate Agents
 
 Print: `[forge] Generating project agents...`
 
