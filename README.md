@@ -2,6 +2,8 @@
 
 A Claude Code plugin for executing ambitious projects through design specifications, without losing sight of your constraints.
 
+> Forge has replaced my use of [ralph-loops](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum).
+
 ## The Problem
 
 When agents tackle multi-step projects, requirements drift. An instruction like "no external dependencies" or "match the existing tone" gets buried in context and ignored by step 10. Forge fixes this.
