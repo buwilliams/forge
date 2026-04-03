@@ -1,6 +1,6 @@
 # Forge
 
-A Claude Code plugin for executing ambitious projects through design specifications, without losing sight of your constraints. No new tools or CLIs required, just your existing Claude Code session.
+A Claude Code plugin for executing ambitious projects through big-picture prompts, without losing sight of your constraints. No new tools or CLIs required, just your existing Claude Code session.
 
 > Forge has replaced my use of [ralph-loops](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum) and my needs for [spec-kit](https://github.com/github/spec-kit).
 
