@@ -6,38 +6,15 @@ A Claude Code plugin for executing ambitious projects through big-picture prompt
 
 ## Why
 
-I wanted Claude Code to automate large goals, not just answer questions or write a file, but actually drive ambitious, multi-step work to completion. When I tried, it fell apart in a few consistent ways: I'd lose track of what I'd asked for across sessions, context rot would kick in and instructions I'd given early on would get ignored by step 10, and there was no good place to keep the rules and constraints that should shape everything.
+I wanted Claude Code to automate large goals, not just answer questions or write a file, but actually drive ambitious, multi-step work to completion. When I tried, it fell apart in a few consistent ways: The AI would lose track of important prompts I gave it, new sessions didn't have my previous prompts, and it would do a poor job of implementing ambitious goals.
 
-That's why I built Forge. It keeps track of your constitution, product, and project specs so you don't have to re-explain yourself. It handles context rot by launching subagents with exactly the right context for each piece of work. And it all happens inside a natural Claude Code workflow, with no new tools or setup required.
+That's why I built Forge. It keeps track of your constitution, product, and project specs so you don't have to re-explain yourself. It handles context rot by launching subagents with exactly the right context for each piece of work. It manages the task workflow from decomposition to completion, tracking what's done, what's in progress, and what's blocked. And it all happens inside a natural Claude Code workflow, with no new tools or setup required.
 
-## How It Works
-
-### Specs layer on top of each other
-
-There are three kinds of specs, each narrowing the scope for the next:
-
-1. **Product spec:** the what and why. Defines who the product is for, what problems it solves, and what success looks like. Keeps individual project specs mission-aligned.
-2. **Constitution:** non-negotiable principles for the entire project. Every task Forge generates must comply with these rules. Written once, enforced always.
-3. **Project specs:** concrete goals: what to build, how to verify it's done, and any constraints specific to that piece of work. Each lives in a numbered directory (`.forge/00001_name/`). When you create a project spec, Forge reads your constitution and product to flag conflicts before any work begins.
-
-### Project specs become tasks
-
-When you run `/forge:work`, Forge reads the project spec and drives it through a pipeline using Claude Code subagents, each launched with precisely the context it needs and nothing more:
-
-1. **Council:** a subagent reads the spec and determines the right mix of roles (e.g. programmer, tester, security engineer, writer). Roles are tailored to the domain, not generic.
-2. **Pipeline design:** a subagent reads the spec and council to produce `pipeline.md`: the project's global constraints, quality bar, verification approach, and tech stack. These constraints are injected into every task.
-3. **Agent generation:** a subagent generates one role-specific agent file per council member, each with execution instructions and a deliberation perspective tailored to this project.
-4. **Plan decomposition:** a subagent reads the pipeline and all agent files to produce self-contained task files in `todo/`. Each task includes its role, steps, verification checks, and a save command. A fresh subagent could execute any task with only the task file and pipeline.
-5. **Execution:** for each task, Forge launches a subagent carrying its role's agent file, `pipeline.md`, the task, and all council files for deliberation. The subagent implements, verifies, and commits. An independent verifier subagent then re-checks every verification item from scratch before the task is marked done.
-6. **Report:** summarizes completed and blocked tasks. Blocked tasks are written to a new design doc for a focused retry run.
-
-The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable. Re-run the same command and Forge picks up exactly where it left off.
-
-## Installation
+## Install
 
 Forge is a Claude Code plugin. See the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) for how to install plugins from the marketplace or load them locally via `--plugin-dir`.
 
-## Workflow
+## Usage
 
 1. **`/forge:init`:** set up your project's constitution (non-negotiable principles) and product spec (what and why). Do this once per project.
 2. **`/forge:create <name>`:** define a new project spec through a guided conversation. Forge reads your constitution and product spec to keep the work aligned.
@@ -46,8 +23,6 @@ Forge is a Claude Code plugin. See the [Claude Code documentation](https://docs.
 5. **`/forge:list`:** check progress across all specs at any time.
 
 Always forward. Completed work is never re-run. Interrupted runs resume from where they stopped.
-
-## Usage
 
 ```
 /forge:init                        # set up constitution.md + product.md (once per project)
@@ -73,8 +48,6 @@ Project specs live in numbered directories under `.forge/`:
     council/                 # generated role agents
 ```
 
-### Direct usage
-
 You can also pass a design file directly, useful for one-off runs or when integrating with spec-kit:
 
 ```
@@ -83,41 +56,43 @@ You can also pass a design file directly, useful for one-off runs or when integr
 /forge path/to/design.md --clean   # delete the .forge/ state and start over
 ```
 
-**Testing forge itself:**
+## How It Works
 
-```
-./tests/test.sh --reset  # wipe state, run forge, then verify
-./tests/test.sh          # verify only (after forge has already run)
-```
+### Specs layer on top of each other
 
-## Key Concepts
+There are three kinds of specs, each narrowing the scope for the next. Forge keeps track of all of them so you don't have to:
+
+1. **Product spec:** the what and why. Defines who the product is for, what problems it solves, and what success looks like. Keeps individual project specs mission-aligned.
+2. **Constitution:** non-negotiable principles for the entire project. Every task Forge generates must comply with these rules. Written once, enforced always.
+3. **Project specs:** concrete goals: what to build, how to verify it's done, and any constraints specific to that piece of work. Each lives in a numbered directory (`.forge/00001_name/`). When you create a project spec, Forge reads your constitution and product to flag conflicts before any work begins.
+
+### Project specs become tasks
+
+When you run `/forge:work`, Forge reads the project spec and drives it through a pipeline using Claude Code subagents, each launched with precisely the context it needs and nothing more:
+
+1. **Council:** a subagent reads the spec and determines the right mix of roles (e.g. programmer, tester, security engineer, writer). Roles are tailored to the domain, not generic.
+2. **Pipeline design:** a subagent reads the spec and council to produce `pipeline.md`: the project's global constraints, quality bar, verification approach, and tech stack. These constraints are injected into every task.
+3. **Agent generation:** a subagent generates one role-specific agent file per council member, each with execution instructions and a deliberation perspective tailored to this project.
+4. **Plan decomposition:** a subagent reads the pipeline and all agent files to produce self-contained task files in `todo/`. Each task includes its role, steps, verification checks, and a save command. A fresh subagent could execute any task with only the task file and pipeline.
+5. **Execution:** for each task, Forge launches a subagent carrying its role's agent file, `pipeline.md`, the task, and all council files for deliberation. The subagent implements, verifies, and commits. An independent verifier subagent then re-checks every verification item from scratch before the task is marked done.
+6. **Report:** summarizes completed and blocked tasks. Blocked tasks are written to a new design doc for a focused retry run.
+
+The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable. Re-run the same command and Forge picks up exactly where it left off.
+
+### Key concepts
 
 **Global Constraints:** defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
 
 **Council Deliberation:** before execution, the task agent reasons through each council role's perspective in a single context. This catches issues before work begins.
 
-**`council/*.md` files:** generated in Phase 3, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. They are used in two ways:
-- **Plan Decomposition:** the plan-decomposer reads all of them to understand each role's scope and assign tasks to the right role.
-- **Execution:** the file matching the task's role becomes that agent's primary instructions. All council files are also passed together so the agent can deliberate from every perspective before acting.
+**`council/*.md` files:** generated in the agent generation phase, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. The plan-decomposer reads all of them to assign tasks to the right role. During execution, the matching role file becomes that agent's primary instructions, and all council files are passed together so the agent can deliberate from every perspective before acting.
 
 **Dynamic Verification:** every task that produces output with observable behavior includes a check that exercises it directly: starting a server and calling an endpoint, invoking a CLI with real arguments, running a script against real data. Static checks (file exists, pattern absent) confirm structure; dynamic checks confirm the output actually works.
 
-**Sync:** before each task, forge pulls the latest changes so work done by others is visible. After each task completes, forge pushes so others receive it immediately. If a pull fails (conflict, no connectivity), the run stops cleanly for manual resolution. If there is no remote, sync is skipped silently.
+**Sync:** before each task, Forge pulls the latest changes so work done by others is visible. After each task completes, Forge pushes so others receive it immediately. If a pull fails (conflict, no connectivity), the run stops cleanly for manual resolution. If there is no remote, sync is skipped silently.
 
 **Attempt Tracking:** each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
 
-**Task Context:** each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly. By execution time, everything relevant should be captured in the task and pipeline.
+**Task Context:** each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly. By execution time, everything relevant is captured in the task and pipeline.
 
 **Not Just for Code:** Forge works for any file-based project. If no tech stack is detected, the council is inferred from the design document alone. Default roles (`programmer`, `tester`, `product-manager`) can be replaced during the approval step with whatever fits the project (e.g., `writer`, `editor`, `strategist`).
-
-## Docs
-
-- [goal.md](docs/goal.md): problem statement and motivation
-- [plan.md](docs/plan.md): full implementation blueprint
-- [support-specs.md](docs/support-specs.md): native spec management (constitution, product, project specs)
-- [spec-kit.md](docs/spec-kit.md): using spec-kit with Forge for spec-driven development
-
-## Requirements
-
-- [Claude Code](https://claude.ai/code) CLI
-- A git repository for the target project
