@@ -78,21 +78,3 @@ When you run `/forge:work`, Forge reads the project spec and drives it through a
 6. **Report:** summarizes completed and blocked tasks. Blocked tasks are written to a new design doc for a focused retry run.
 
 The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable. Re-run the same command and Forge picks up exactly where it left off.
-
-### Key concepts
-
-**Global Constraints:** defined once in `pipeline.md`, injected into every task. Constraints are verified after each task, not just at the end.
-
-**Council Deliberation:** before execution, the task agent reasons through each council role's perspective in a single context. This catches issues before work begins.
-
-**`council/*.md` files:** generated in the agent generation phase, one per role (e.g., `programmer.md`, `tester.md`). These are project-specific agent instructions tailored to the design and pipeline. The plan-decomposer reads all of them to assign tasks to the right role. During execution, the matching role file becomes that agent's primary instructions, and all council files are passed together so the agent can deliberate from every perspective before acting.
-
-**Dynamic Verification:** every task that produces output with observable behavior includes a check that exercises it directly: starting a server and calling an endpoint, invoking a CLI with real arguments, running a script against real data. Static checks (file exists, pattern absent) confirm structure; dynamic checks confirm the output actually works.
-
-**Sync:** before each task, Forge pulls the latest changes so work done by others is visible. After each task completes, Forge pushes so others receive it immediately. If a pull fails (conflict, no connectivity), the run stops cleanly for manual resolution. If there is no remote, sync is skipped silently.
-
-**Attempt Tracking:** each task gets up to 3 attempts (configurable). After max attempts, the task moves to `blocked/` for manual review rather than silently failing.
-
-**Task Context:** each task agent receives its role's generated instructions, `pipeline.md`, the task file, and all council member files for deliberation. It does not receive the original `design.md` directly. By execution time, everything relevant is captured in the task and pipeline.
-
-**Not Just for Code:** Forge works for any file-based project. If no tech stack is detected, the council is inferred from the design document alone. Default roles (`programmer`, `tester`, `product-manager`) can be replaced during the approval step with whatever fits the project (e.g., `writer`, `editor`, `strategist`).
