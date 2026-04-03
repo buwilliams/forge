@@ -69,15 +69,16 @@ Constitution
 Project Specs  (<total count> total)
 
   <For each spec, one line:>
-  <SPEC_NUM>_<SLUG>   <status>   <done>✓ <todo> pending  <blocked> blocked
+  [<SPEC_NUM>] <SLUG>   <status>   <done>✓ <todo> pending  <blocked> blocked
 
   <Omit task counts for specs with status 'not started'>
 
 ───────────────────────────────────────
 Total tasks:  <done>✓ done   <todo + working> pending   <blocked> blocked
+Use <SLUG> as the name in /forge:start, /forge:stop, /forge:remove, /forge:new-task.
 
   <If no specs exist:>
-  No project specs yet. Run /forge:new-spec <work-name> to create one.
+  No project specs yet. Run /forge:new-spec <name> to create one.
 ```
 
 ---
