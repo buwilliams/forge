@@ -101,7 +101,7 @@ Otherwise, for each numbered spec directory in the filtered set (sorted by numbe
 ```
 
 Project specs:
-  <SPEC_NUM>_<SLUG>
+  [<SPEC_NUM>] <SLUG>
     Title:   <first heading from project.md, or "(no project.md)">
     Status:  <not started | in progress | blocked | done | partial | empty>
     Tasks:   <done>✓  <todo> pending  <working> working  <blocked> blocked
@@ -111,9 +111,10 @@ Project specs:
 
 At the end, print a hint based on what's visible:
 
-- If any spec is `not started`: `  Tip: /forge:start <name> to set up and run a spec`
-- If any spec is `in progress`: `  Tip: /forge:start <name> to resume a run`
+- If any spec is `not started`: `  Tip: /forge:start <SLUG> to set up and run a spec`
+- If any spec is `in progress`: `  Tip: /forge:start <SLUG> to resume a run`
 - If `ALL_MODE = false` and any completed specs were hidden: `  Tip: /forge:list --all to include completed specs`
+- Always: `  Use <SLUG> as the name in /forge:start, /forge:stop, /forge:remove, /forge:new-task.`
 
 ---
 
