@@ -5,6 +5,7 @@
   "commands": [
     "./commands/forge.md",
     "./commands/init.md",
+    "./commands/info.md",
     "./commands/new.md",
     "./commands/list.md",
     "./commands/remove.md",
