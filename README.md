@@ -1,25 +1,37 @@
 # Forge
 
-A Claude Code plugin for executing ambitious projects through design specifications, without losing sight of your constraints.
+A Claude Code plugin for executing ambitious projects through design specifications, without losing sight of your constraints. No new tools or CLIs required — just your existing Claude Code session.
 
 > Forge has replaced my use of [ralph-loops](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum).
 
 ## The Problem
 
-When agents tackle multi-step projects, requirements drift. An instruction like "no external dependencies" or "match the existing tone" gets buried in context and ignored by step 10. Forge fixes this.
+Specs are how you direct AI to do things for you — they capture what to build, why it matters, and the rules that can't be broken. Without them, you're reprompting constantly and hoping the agent remembers what you said three steps ago.
+
+When agents tackle multi-step projects, requirements drift. An instruction like "no external dependencies" or "match the existing tone" gets buried in context and ignored by step 10. Forge fixes this by making specs first-class: you define them once, and they're enforced at every step.
 
 ## How It Works
 
-Forge takes a design document and runs it through a pipeline:
+### Specs layer on top of each other
 
-1. **Council** — determines the agent roles (perspectives) needed for the project
-2. **Pipeline Design** — captures the project's constraints, conventions, and quality bar
-3. **Agent Generation** — generates project-specific agents for the council
-4. **Plan Decomposition** — breaks work into small, self-contained tasks
-5. **Execution** — runs each task through an experiment → verify → save loop, syncing with the remote between tasks
-6. **Report** — summarizes what was built
+There are three kinds of specs, each narrowing the scope for the next:
 
-The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and forge picks up where it left off.
+- **Constitution** — non-negotiable principles for the entire project. Every task Forge generates must comply with these rules. Written once, enforced always.
+- **Product spec** — the what and why. Defines who the product is for, what problems it solves, and what success looks like. Keeps individual project specs mission-aligned.
+- **Project specs** — concrete goals: what to build, how to verify it's done, and any constraints specific to that piece of work. Each lives in a numbered directory (`.forge/00001_name/`). When you create a project spec, Forge reads your constitution and product to flag conflicts before any work begins.
+
+### Project specs become tasks
+
+When you run `/forge:work`, Forge reads the project spec and drives it through a pipeline using Claude Code subagents — each launched with precisely the context it needs and nothing more:
+
+1. **Council** — a subagent reads the spec and determines the right mix of roles (e.g. programmer, tester, security engineer, writer). Roles are tailored to the domain, not generic.
+2. **Pipeline design** — a subagent reads the spec and council to produce `pipeline.md`: the project's global constraints, quality bar, verification approach, and tech stack. These constraints are injected into every task.
+3. **Agent generation** — a subagent generates one role-specific agent file per council member, each with execution instructions and a deliberation perspective tailored to this project.
+4. **Plan decomposition** — a subagent reads the pipeline and all agent files to produce self-contained task files in `todo/`. Each task includes its role, steps, verification checks, and a save command. A fresh subagent could execute any task with only the task file and pipeline.
+5. **Execution** — for each task, Forge launches a subagent carrying its role's agent file, `pipeline.md`, the task, and all council files for deliberation. The subagent implements, verifies, and commits. An independent verifier subagent then re-checks every verification item from scratch before the task is marked done.
+6. **Report** — summarizes completed and blocked tasks. Blocked tasks are written to a new design doc for a focused retry run.
+
+The filesystem is the source of truth. Tasks move through `todo/` → `working/` → `done/` (or `blocked/`). Runs are always resumable — re-run the same command and Forge picks up exactly where it left off.
 
 ## Installation
 
@@ -29,7 +41,7 @@ Forge is a Claude Code plugin. See the [Claude Code documentation](https://docs.
 
 1. **`/forge:init`** — set up your project's constitution (non-negotiable principles) and product spec (what and why). Do this once per project.
 2. **`/forge:create <name>`** — define a new project spec through a guided conversation. Forge reads your constitution and product spec to keep the work aligned.
-3. **`/forge:forge <name>`** — execute the spec. Forge determines the council, designs the pipeline, generates agents, decomposes the work into tasks, and runs them one by one.
+3. **`/forge:work <name>`** — execute the spec. Forge determines the council, designs the pipeline, generates agents, decomposes the work into tasks, and runs them one by one.
 4. **If tasks block** — Forge writes a `*-blocked.md` doc summarizing each failure. Edit it to add context or clarify requirements, then re-run.
 5. **`/forge:list`** — check progress across all specs at any time.
 
@@ -41,9 +53,9 @@ Always forward — completed work is never re-run. Interrupted runs resume from 
 /forge:init                        # set up constitution.md + product.md (once per project)
 /forge:create auth-system          # create a new project spec interactively
 /forge:list                        # see all specs and their status
-/forge:forge auth-system           # run forge on a named spec
-/forge:forge auth-system --ask     # pause for approval at each phase
-/forge:forge auth-system --clean   # clear state and start over
+/forge:work auth-system            # run forge on a named spec
+/forge:work auth-system --ask      # pause for approval at each phase
+/forge:work auth-system --clean    # clear state and start over
 /forge:del old-experiment          # delete a spec
 ```
 

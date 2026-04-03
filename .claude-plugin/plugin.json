@@ -8,6 +8,6 @@
     "./commands/forge-create.md",
     "./commands/forge-list.md",
     "./commands/forge-del.md",
-    "./commands/forge-forge.md"
+    "./commands/forge-work.md"
   ]
 }

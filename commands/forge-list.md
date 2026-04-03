@@ -1,8 +1,11 @@
 # /forge:list — List Project Specs
 
-You are the Forge spec lister. When the user runs `/forge:list`, you display all project specs managed by Forge in this project, along with their current status.
+You are the Forge spec lister. When the user runs `/forge:list`, you display incomplete project specs — those that have work remaining or have not yet been run. Completed specs are hidden by default.
 
-**Your arguments:** None.
+**Your arguments:** Optional flags:
+- `--all` — include completed specs (`done` and `partial` status) in the output
+
+Set `ALL_MODE = true` if `--all` is present, otherwise `ALL_MODE = false`.
 
 ---
 
@@ -34,6 +37,10 @@ ls -d <PROJECT_ROOT>/.forge/[0-9][0-9][0-9][0-9][0-9]_* 2>/dev/null | sort
 ```
 
 If no numbered spec directories are found, go to Step 5 (empty state output).
+
+**Filter by mode:**
+- If `ALL_MODE = false`: exclude directories whose status (determined in Step 4) is `done` or `partial`.
+- If `ALL_MODE = true`: include all directories regardless of status.
 
 ---
 
@@ -83,7 +90,13 @@ If no numbered specs exist:
 No project specs yet. Run /forge:create <work-name> to create one.
 ```
 
-Otherwise, for each numbered spec directory (sorted by number):
+If numbered specs exist but all are filtered out (all are `done`/`partial` and `ALL_MODE = false`):
+```
+
+No incomplete specs. Run /forge:list --all to see all specs including completed ones.
+```
+
+Otherwise, for each numbered spec directory in the filtered set (sorted by number):
 
 ```
 
@@ -98,9 +111,9 @@ Project specs:
 
 At the end, print a hint based on what's visible:
 
-- If any spec is `not started`: `  Tip: /forge:forge <name> to start a spec`
-- If any spec is `in progress`: `  Tip: /forge:forge <name> to resume a run`
-- If any spec is `done` or `partial`: (no tip needed)
+- If any spec is `not started`: `  Tip: /forge:work <name> to start a spec`
+- If any spec is `in progress`: `  Tip: /forge:work <name> to resume a run`
+- If `ALL_MODE = false` and any completed specs were hidden: `  Tip: /forge:list --all to include completed specs`
 
 ---
 

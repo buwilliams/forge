@@ -146,7 +146,7 @@ Print:
 [forge:create] Spec created: .forge/<SPEC_NUM>_<SLUG>/design.md
 
 Next steps:
-  /forge:forge <SLUG>   Run Forge on this spec
+  /forge:work <SLUG>   Run Forge on this spec
   /forge:list           List all specs
 ```
 

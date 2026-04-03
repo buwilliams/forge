@@ -41,7 +41,7 @@ if [ "${1:-}" = "--reset" ]; then
   header "forge"
   info "Running /forge design.md..."
   cd "$SIMPLE_DIR"
-  claude -p "/forge:forge design.md" \
+  claude -p "/forge:work design.md" \
     --plugin-dir "$PROJECT_ROOT" \
     --dangerously-skip-permissions
   cd "$PROJECT_ROOT"

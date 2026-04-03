@@ -1,6 +1,6 @@
-# /forge:forge — Execute a Named Project Spec
+# /forge:work — Execute a Named Project Spec
 
-You are the Forge execution entry point for named spec directories. When the user runs `/forge:forge <work-name>`, you locate the matching spec directory, resolve the design file path, and execute the complete Forge pipeline on it.
+You are the Forge execution entry point for named spec directories. When the user runs `/forge:work <work-name>`, you locate the matching spec directory, resolve the design file path, and execute the complete Forge pipeline on it.
 
 **Your arguments:** The first argument is a work-name or spec number (e.g., `auth-system`, `00003`, `auth`). Optional flags may appear anywhere:
 - `--ask` — enable interactive approval at each phase
@@ -8,7 +8,7 @@ You are the Forge execution entry point for named spec directories. When the use
 
 If no work-name is provided, print:
 ```
-[forge:forge] Usage: /forge:forge <work-name> [--ask|--clean]
+[forge:work] Usage: /forge:work <work-name> [--ask|--clean]
 ```
 and stop.
 
@@ -44,13 +44,13 @@ For each spec directory, extract the slug (everything after the `_` separator). 
 
 **If no match:** Print:
 ```
-[forge:forge] No spec matching '<work-name>' found. Run /forge:list to see available specs.
+[forge:work] No spec matching '<work-name>' found. Run /forge:list to see available specs.
 ```
 and stop.
 
 **If multiple matches** (ambiguous prefix): Print:
 ```
-[forge:forge] '<work-name>' is ambiguous. Matching specs:
+[forge:work] '<work-name>' is ambiguous. Matching specs:
   <list each match>
 Re-run with the full name or spec number.
 ```
@@ -66,12 +66,12 @@ Set:
 
 Verify `DESIGN_FILE` exists using the Read tool. If it does not exist, print:
 ```
-[forge:forge] Spec directory found but design.md is missing at <DESIGN_FILE>.
+[forge:work] Spec directory found but design.md is missing at <DESIGN_FILE>.
 Run /forge:create to set up the spec first.
 ```
 and stop.
 
-Print: `[forge:forge] Found spec: <NAME>`
+Print: `[forge:work] Found spec: <NAME>`
 
 ---
 
@@ -91,7 +91,7 @@ Now execute all phases (Phase 1 through Phase 8) as described in that file, with
 - Skip the "Derive the .forge directory name" step — `NAME` and `FORGE_DIR` are already set.
 - Skip the "directory name collision" check — the spec directory is the canonical location.
 - Still perform: git repository check, `--clean` handling, directory tree creation (`todo/`, `working/`, `done/`, `blocked/`, `council/`), and `.forge_source` write.
-- Print: `[forge:forge] Initializing — <NAME>`
+- Print: `[forge:work] Initializing — <NAME>`
 
 **All other phases:** Execute exactly as described in forge.md, using the pre-resolved `FORGE_DIR`, `NAME`, and design file path throughout.
 
@@ -105,4 +105,4 @@ Now execute all phases (Phase 1 through Phase 8) as described in that file, with
 1. **The spec directory IS the forge directory.** All forge artifacts (pipeline.md, council.md, todo/, working/, etc.) live directly in `<SPEC_DIR>`, not in a subdirectory derived from the design filename.
 2. **Never re-derive FORGE_DIR from the design filename.** The path resolution happens here in Step 1 and is final.
 3. **Resumability is preserved.** The Phase 2 resume check in forge.md applies normally — if todo/ or working/ have files, it resumes from where it left off.
-4. **Flags pass through.** `--ask` and `--clean` from the `/forge:forge` invocation behave identically to how they work in `/forge`.
+4. **Flags pass through.** `--ask` and `--clean` from the `/forge:work` invocation behave identically to how they work in `/forge`.

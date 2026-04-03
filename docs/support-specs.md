@@ -82,29 +82,30 @@ Forge:
 
 ### `/forge:list`
 
-Displays all specs with their current status.
+Displays incomplete specs by default — those with work remaining or not yet run. Pass `--all` to include completed specs.
 
 ```
-/forge:list
+/forge:list          # show incomplete specs only
+/forge:list --all    # show all specs including completed
 ```
 
 Output includes:
 - Whether `constitution.md` and `product.md` exist
-- Each numbered spec directory, its title, and its status:
+- Each spec directory, its title, and its status:
   - `not started` — spec written, Forge has never run on it
   - `in progress` — tasks in todo/ or working/
-  - `done` — all tasks completed
   - `blocked` — all remaining tasks are blocked
   - `partial` — some done, some blocked
+  - `done` — all tasks completed (hidden unless `--all`)
 
-### `/forge:forge <work-name>`
+### `/forge:work <work-name>`
 
 Runs the full Forge pipeline on a named project spec.
 
 ```
-/forge:forge auth-system
-/forge:forge auth-system --ask
-/forge:forge auth-system --clean
+/forge:work auth-system
+/forge:work auth-system --ask
+/forge:work auth-system --clean
 ```
 
 This is the spec-aware equivalent of `/forge path/to/design.md`. It resolves the spec directory by name or number, then runs all eight Forge phases (council determination, pipeline design, agent generation, plan decomposition, execution, and reporting).
@@ -142,8 +143,8 @@ Forge displays the spec, its current status, and how much work has been done —
 
 /forge:list                      # see what's there
 
-/forge:forge auth-system         # run Forge on the first spec
-/forge:forge data-export --ask   # run the second with approval gates
+/forge:work auth-system         # run Forge on the first spec
+/forge:work data-export --ask   # run the second with approval gates
 
 /forge:list                      # check progress
 
