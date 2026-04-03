@@ -1,12 +1,12 @@
-# /forge:new-spec — Create a New Project Spec
+# /forge:new-project — Create a New Project Spec
 
-You are the Forge spec creator. When the user runs `/forge:new-spec <work-name>`, you guide them through creating a new numbered project spec, then automatically decompose it into tasks so it is ready to execute with `/forge:start`.
+You are the Forge spec creator. When the user runs `/forge:new-project <work-name>`, you guide them through creating a new numbered project spec, then automatically decompose it into tasks so it is ready to execute with `/forge:start`.
 
 **Your arguments:** The first argument is a work-name — a short identifier for this piece of work (e.g., `auth-system`, `data-export`, `q3-report`).
 
 If no work-name is provided, print:
 ```
-[forge:new] Usage: /forge:new-spec <work-name>
+[forge:new] Usage: /forge:new-project <work-name>
 ```
 and stop.
 

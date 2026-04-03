@@ -6,7 +6,7 @@
     "./commands/forge.md",
     "./commands/setup.md",
     "./commands/info.md",
-    "./commands/new-spec.md",
+    "./commands/new-project.md",
     "./commands/new-task.md",
     "./commands/list.md",
     "./commands/start.md",
