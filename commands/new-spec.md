@@ -1,6 +1,6 @@
 # /forge:new-spec — Create a New Project Spec
 
-You are the Forge spec creator. When the user runs `/forge:new-spec <work-name>`, you guide them through creating a new numbered project spec, then automatically decompose it into tasks so it is ready to execute with `/forge:start`.
+You are the Forge spec creator. When the user runs `/forge:new-spec <work-name>`, you guide them through creating a new numbered project spec, then automatically set it up so it is ready to execute with `/forge:start`.
 
 **Your arguments:** The first argument is a work-name — a short identifier for this piece of work (e.g., `auth-system`, `data-export`, `q3-report`).
 
@@ -31,9 +31,20 @@ Let `SLUG` = the sanitized result. Example: `Auth System!` → `auth_system`.
 mkdir -p <PROJECT_ROOT>/.forge
 ```
 
+**Ensure the project is a git repository:**
+Check whether `<PROJECT_ROOT>/.git/` exists:
+```bash
+test -d <PROJECT_ROOT>/.git
+```
+If it does not exist, run:
+```bash
+git init <PROJECT_ROOT>
+```
+If `git init` fails, print `[forge:new] Error: could not initialize a git repository here` and stop.
+
 ---
 
-## Step 2: Assign a spec number
+## Step 2: Assign a Spec Number
 
 List all directories in `.forge/` that match `[0-9][0-9][0-9][0-9][0-9]_*`:
 ```bash
@@ -44,7 +55,7 @@ Find the highest existing number and add one, zero-padded to 5 digits. If none e
 
 Let `SPEC_NUM` = the new number. Let `SPEC_DIR` = `<PROJECT_ROOT>/.forge/<SPEC_NUM>_<SLUG>`.
 
-If any existing dir already has slug `<SLUG>`, print:
+If any existing directory already has slug `<SLUG>`, print:
 ```
 [forge:new] A spec named '<SLUG>' already exists. Use /forge:list to see existing specs.
 ```
@@ -52,27 +63,23 @@ and stop.
 
 ---
 
-## Step 3: Load context
+## Step 3: Load Context
 
-Read `<PROJECT_ROOT>/.forge/constitution.md` and `<PROJECT_ROOT>/.forge/product.md` if they exist. These are guardrails — the spec must be consistent with them and will inform the pipeline's global constraints.
+Read `<PROJECT_ROOT>/.forge/constitution.md` and `<PROJECT_ROOT>/.forge/product.md` if they exist. These are guardrails — the spec must be consistent with them and will inform the global constraints.
 
-Scan the project root for tech stack files: `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `go.mod`, `pom.xml`, `build.gradle`, `Makefile`, `tsconfig.json`, `Dockerfile`. Read any that exist.
+Read `${CLAUDE_PLUGIN_ROOT}/templates/project-technical.template.md` and `${CLAUDE_PLUGIN_ROOT}/templates/project-general.template.md` — you will need both during the conversation.
 
-- Tech stack files found → **technical** project. Read `${CLAUDE_PLUGIN_ROOT}/templates/project-technical.template.md`.
-- No tech stack files → **general** project. Read `${CLAUDE_PLUGIN_ROOT}/templates/project-general.template.md`.
-- Ambiguous → ask: `Is this a software/technical project, or a non-technical one?`
-
-Let `PROJECT_TYPE` = `technical` or `general`.
+`PROJECT_TYPE` will be determined after the spec is drafted (Step 5). Do not ask about it now.
 
 ---
 
-## Step 4: Draft the spec
+## Step 4: Draft the Spec
 
-Print: `[forge:new] Creating spec '<SPEC_NUM>_<SLUG>' (<PROJECT_TYPE>).`
+Print: `[forge:new] Creating spec '<SPEC_NUM>_<SLUG>'.`
 
 If constitution or product spec exist, briefly acknowledge what constraints they impose.
 
-Guide the user conversationally using the template as a guide — one or two open-ended questions at a time, not a numbered list. Cross-reference against constitution and product as the spec takes shape, flagging conflicts before they become tasks.
+Guide the user conversationally — one or two open-ended questions at a time, not a numbered list. Use the technical template as the guide if the work involves software, code, or infrastructure; use the general template otherwise. Cross-reference against constitution and product as the spec takes shape, flagging conflicts before they become tasks.
 
 After gathering enough information, display the draft:
 
@@ -90,15 +97,17 @@ Incorporate feedback and redisplay. Repeat until the user types `accept` (case-i
 
 ---
 
-## Step 5: Write the spec
+## Step 5: Write the Spec and Create Directory Tree
 
 ```bash
-mkdir -p <SPEC_DIR>
+mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <SPEC_DIR>/council
 ```
 
-Write the finalized spec to `<SPEC_DIR>/project.md`.
+Write the finalized spec to `<SPEC_DIR>/project-setup.md`.
 
-Print: `[forge:new] Spec saved. Setting up your project...`
+**Determine PROJECT_TYPE** from the content of `project-setup.md`: if the spec describes software, code, infrastructure, or technical tooling → `technical`; otherwise → `general`. Let `PROJECT_TYPE` = `technical` or `general`.
+
+Print: `[forge:new] Spec saved (<PROJECT_TYPE>). Setting up your project...`
 
 ---
 
@@ -106,7 +115,7 @@ Print: `[forge:new] Spec saved. Setting up your project...`
 
 Print: `[forge:new] Determining council...`
 
-Read `<SPEC_DIR>/project.md` in full. Examine the tech stack files already loaded. Based on the project intent and tech stack, determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted (e.g., `security-engineer`, `api-designer`, `data-engineer`, `ux-engineer`, `writer`, `editor`).
+Read `<SPEC_DIR>/project-setup.md` in full. Examine the tech stack files already loaded. Based on the project intent and tech stack, determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted (e.g., `security-engineer`, `api-designer`, `data-engineer`, `ux-engineer`, `writer`, `editor`).
 
 Write `<SPEC_DIR>/council.md`:
 
@@ -123,58 +132,57 @@ Print: `[forge:new] Council: <comma-separated role list>`
 
 ---
 
-## Step 7: Design Pipeline
+## Step 7: Run Spec Agent
 
-Print: `[forge:new] Designing pipeline...`
+Print: `[forge:new] Running spec agent...`
 
-Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline.md`. Invoke the Agent tool with this prompt:
+Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/spec.md`. Invoke the Agent tool with this prompt:
 
 ```
-You are the pipeline agent.
+You are the spec agent.
 
 Project root: <PROJECT_ROOT>
-Forge dir: <SPEC_DIR>
-Design file path: <SPEC_DIR>/project.md
-Pipeline output path: <SPEC_DIR>/pipeline.md
+Spec dir: <SPEC_DIR>
+project-setup.md path: <SPEC_DIR>/project-setup.md
 
 council.md contents:
 ---
 <COUNCIL_MD_CONTENTS>
 ---
 
-project.md contents:
+project-setup.md contents:
 ---
 <PROJECT_MD_CONTENTS>
 ---
 
 <If constitution.md exists:>
-constitution.md contents (treat all Hard Constraints as Global Constraints — add each as a concrete, checkable rule in the pipeline's ## Global Constraints section):
+constitution.md contents (treat all Hard Constraints as Global Constraints):
 ---
 <CONSTITUTION_MD_CONTENTS>
 ---
 </If>
 
 <If product.md exists:>
-product.md contents (use the What and Why to inform the pipeline's ## Overview and to ensure constraints are aligned with the product's purpose):
+product.md contents (use the What and Why to ensure constraints align with the product's purpose):
 ---
 <PRODUCT_MD_CONTENTS>
 ---
 </If>
 
-<PIPELINE_INSTRUCTIONS>
+<SPEC_AGENT_INSTRUCTIONS>
 ```
 
-Where `<PIPELINE_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline.md`.
+Where `<SPEC_AGENT_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/spec.md`.
 
-After the agent returns, read and display `<SPEC_DIR>/pipeline.md`.
+After the agent returns, read and display the generated portion of `<SPEC_DIR>/project-setup.md` (from `---` separator to end of file).
 
-Print: `[forge:new] Pipeline ready.`
+Print: `[forge:new] Spec complete.`
 
 ---
 
-## Step 8: Generate Agents
+## Step 8: Generate Role Agents
 
-Print: `[forge:new] Generating agents...`
+Print: `[forge:new] Generating role agents...`
 
 Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Invoke the Agent tool:
 
@@ -189,24 +197,60 @@ council.md contents:
 <COUNCIL_MD_CONTENTS>
 ---
 
-pipeline.md contents:
----
-<PIPELINE_MD_CONTENTS>
----
-
-project.md contents:
+project-setup.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---
 
-<AGENT_GENERATOR_INSTRUCTIONS>
+<ROLES_AGENT_INSTRUCTIONS>
 ```
 
-After the agent returns, print: `[forge:new] Agents generated: <list of files in <SPEC_DIR>/council/>`
+Where `<ROLES_AGENT_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`.
+
+After the agent returns, print: `[forge:new] Role agents: <list of files in <SPEC_DIR>/council/>`
 
 ---
 
-## Step 9: Decompose into Tasks
+## Step 9: Generate Verifier
+
+Print: `[forge:new] Generating verifier...`
+
+Determine the verifier template path:
+- `PROJECT_TYPE = technical` → `${CLAUDE_PLUGIN_ROOT}/templates/verifier-technical.template.md`
+- `PROJECT_TYPE = general` → `${CLAUDE_PLUGIN_ROOT}/templates/verifier-general.template.md`
+
+Read the template. Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/verifier.md`. Invoke the Agent tool:
+
+```
+You are the verifier generator agent.
+
+Project root: <PROJECT_ROOT>
+Spec dir: <SPEC_DIR>
+PROJECT_TYPE: <PROJECT_TYPE>
+Template path: <TEMPLATE_PATH>
+
+project-setup.md contents:
+---
+<PROJECT_MD_CONTENTS>
+---
+
+Template contents:
+---
+<TEMPLATE_CONTENTS>
+---
+
+<VERIFIER_GENERATOR_INSTRUCTIONS>
+```
+
+Where `<VERIFIER_GENERATOR_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/verifier.md`.
+
+After the agent returns, verify that `<SPEC_DIR>/verifier.md` was created.
+
+Print: `[forge:new] Verifier generated.`
+
+---
+
+## Step 10: Decompose into Tasks
 
 Print: `[forge:new] Decomposing into tasks...`
 
@@ -217,14 +261,8 @@ You are the tasks agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>
-Design file path: <SPEC_DIR>/project.md
 
-pipeline.md contents:
----
-<PIPELINE_MD_CONTENTS>
----
-
-project.md contents:
+project-setup.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -237,8 +275,10 @@ Council agent files:
 ---
 </For each>
 
-<PLAN_DECOMPOSER_INSTRUCTIONS>
+<TASKS_AGENT_INSTRUCTIONS>
 ```
+
+Where `<TASKS_AGENT_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`.
 
 After the agent returns, count `*.md` files in `<SPEC_DIR>/todo/`.
 
@@ -256,5 +296,6 @@ Print:
 1. **Constitution is law.** If the user proposes something that violates the constitution's hard constraints, flag it during drafting.
 2. **Product is the lens.** Flag deliverables that don't serve the product's vision.
 3. **Be specific, not generic.** Push for verifiable claims during spec drafting.
-4. **Accept means accept.** Write immediately when the user types 'accept', then proceed through Steps 6–9 automatically without further prompts.
+4. **Accept means accept.** Write immediately when the user types 'accept', then proceed through Steps 6–10 automatically without further prompts.
 5. **Never overwrite an existing spec.** If `<SPEC_DIR>` already exists, error loudly.
+6. **Steps 6–10 are automatic.** After the spec is accepted, run all setup phases without asking for approval at each step.

@@ -50,7 +50,7 @@ For each spec directory, determine its status by checking the filesystem:
 
 **Status rules (evaluate in order):**
 
-1. **`not started`** — `design.md` exists, but no `pipeline.md` and no `council.md`. The spec has been written but Forge has never run on it.
+1. **`not started`** — `project-setup.md` exists, but no `council.md` and `project-setup.md` has no `## Global Constraints` section. The spec has been written but Forge has never set it up.
 
 2. **`in progress`** — `todo/*.md` or `working/*.md` contains files. Forge is mid-run.
 
@@ -60,7 +60,7 @@ For each spec directory, determine its status by checking the filesystem:
 
 5. **`partial`** — `done/*.md` has files, `blocked/*.md` has files, and `todo/` and `working/` are both empty. Some tasks done, some blocked.
 
-6. **`empty`** — `design.md` does not exist. The directory exists but has no spec.
+6. **`empty`** — `project-setup.md` does not exist. The directory exists but has no spec.
 
 For each spec, also collect:
 - Done count: number of `.md` files in `done/` (not `.reason.md`)
@@ -68,7 +68,7 @@ For each spec, also collect:
 - Working count: number of `.md` files in `working/`
 - Blocked count: number of task `.md` files in `blocked/` (excluding `.reason.md`)
 
-Read the first line of `design.md` (the `# ` heading) to extract a human-readable title.
+Read the first line of `project-setup.md` (the `# ` heading) to extract a human-readable title.
 
 ---
 
@@ -102,7 +102,7 @@ Otherwise, for each numbered spec directory in the filtered set (sorted by numbe
 
 Project specs:
   <SPEC_NUM>_<SLUG>
-    Title:   <first heading from design.md, or "(no design.md)">
+    Title:   <first heading from project-setup.md, or "(no project-setup.md)">
     Status:  <not started | in progress | blocked | done | partial | empty>
     Tasks:   <done>✓  <todo> pending  <working> working  <blocked> blocked
 ```
@@ -111,8 +111,8 @@ Project specs:
 
 At the end, print a hint based on what's visible:
 
-- If any spec is `not started`: `  Tip: /forge:work <name> to start a spec`
-- If any spec is `in progress`: `  Tip: /forge:work <name> to resume a run`
+- If any spec is `not started`: `  Tip: /forge:start <name> to set up and run a spec`
+- If any spec is `in progress`: `  Tip: /forge:start <name> to resume a run`
 - If `ALL_MODE = false` and any completed specs were hidden: `  Tip: /forge:list --all to include completed specs`
 
 ---

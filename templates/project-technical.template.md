@@ -1,8 +1,8 @@
 # Project Spec: [Work Name]
 
 <!-- This is a technical project spec — for software, infrastructure, tooling, or any work
-     where code is the primary deliverable. Forge will use this as the design.md that drives
-     council selection, pipeline design, and task decomposition.
+     where code is the primary deliverable. Forge will use this as project-setup.md, driving
+     council selection, spec finalization, and task decomposition.
 
      Be specific about requirements and constraints. Vague specs produce blocked tasks.
      The more concrete your constraints and acceptance criteria, the better Forge's output. -->

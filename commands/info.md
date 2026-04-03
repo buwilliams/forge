@@ -40,7 +40,7 @@ For each spec directory, count:
 - **Working tasks:** number of `.md` files in `working/`
 
 Determine each spec's status using the same rules as `/forge:list`:
-- `not started` — no `pipeline.md` and no `council.md`
+- `not started` — no `council.md` and `project-setup.md` has no `## Global Constraints` section
 - `in progress` — files in `todo/` or `working/`
 - `blocked` — files in `blocked/`, none in `todo/` or `working/`
 - `done` — files in `done/`, none in `todo/`, `working/`, or `blocked/`

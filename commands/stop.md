@@ -27,9 +27,26 @@ List all numbered spec directories:
 ls -d <PROJECT_ROOT>/.forge/[0-9][0-9][0-9][0-9][0-9]_* 2>/dev/null | sort
 ```
 
-Normalize the work-name: lowercase, replace hyphens/spaces with underscores.
+Normalize the work-name: lowercase, replace every non-alphanumeric character with an underscore, collapse consecutive underscores, strip leading/trailing underscores.
 
-Match against the list (exact slug, exact number, or unambiguous prefix). If no match or ambiguous, print the appropriate error and stop (same logic as `/forge:start`).
+For each spec directory, extract the 5-digit prefix and the slug (everything after the first `_`). Match the normalized work-name against the list:
+- **Exact slug match**: normalized work-name equals the slug (e.g., `auth_system` matches `00003_auth_system`)
+- **Exact number match**: normalized work-name equals the 5-digit prefix (e.g., `00003` matches `00003_auth_system`)
+- **Prefix match**: normalized work-name is a prefix of the slug, and only one directory matches (e.g., `auth` matches `00003_auth_system` if no other slug starts with `auth`)
+
+**If no match:** Print:
+```
+[forge:stop] No spec matching '<work-name>' found. Run /forge:list to see available specs.
+```
+and stop.
+
+**If multiple prefix matches** (ambiguous): Print:
+```
+[forge:stop] '<work-name>' is ambiguous. Matching specs:
+  <list each match>
+Re-run with the full name or spec number.
+```
+and stop.
 
 Set `SPEC_DIR` = matched directory absolute path.
 
