@@ -17,7 +17,7 @@ Forge is a Claude Code plugin. See the [Claude Code documentation](https://docs.
 ## Usage
 
 1. **`/forge:setup`:** set up your product spec (what and why) and constitution (non-negotiables). Do this once per project.
-2. **`/forge:new-project <name>`:** create a new project spec through a guided conversation. Forge reads your constitution and product spec to keep the work aligned.
+2. **`/forge:new-spec <name>`:** create a new project spec through a guided conversation. Forge reads your constitution and product spec to keep the work aligned.
 3. **`/forge:start <name>`:** execute the spec. Forge determines the council, designs the pipeline, generates agents, decomposes the work into tasks, and runs them one by one.
 4. **If tasks block:** Forge writes a `*-blocked.md` doc summarizing each failure. Edit it to add context or clarify requirements, then re-run.
 5. **`/forge:list`:** check progress across all specs at any time.
@@ -26,7 +26,7 @@ Always forward. Completed work is never re-run. Interrupted runs pick up where t
 
 ```
 /forge:setup                             # set up product.md + constitution.md (once per project)
-/forge:new-project auth-system              # create a new project spec interactively
+/forge:new-spec auth-system              # create a new project spec interactively
 /forge:info                              # summarize specs and task progress
 /forge:list                              # list specs and their status
 /forge:list --all                        # include completed specs

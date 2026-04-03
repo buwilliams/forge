@@ -64,13 +64,13 @@ Forge reads the current project context (README, package.json, CLAUDE.md, etc.) 
 
 If either file already exists, Forge displays it and asks whether to keep or update it.
 
-### `/forge:new-project <work-name>`
+### `/forge:new-spec <work-name>`
 
 Creates a new numbered project spec through a guided conversation.
 
 ```
-/forge:new-project auth-system
-/forge:new-project q3-marketing-report
+/forge:new-spec auth-system
+/forge:new-spec q3-marketing-report
 ```
 
 Forge:
@@ -138,8 +138,8 @@ Forge displays the spec, its current status, and how much work has been done —
 ```
 /forge:setup                      # set up constitution + product spec (once per project)
 
-/forge:new-project auth-system        # create a project spec
-/forge:new-project data-export        # create another
+/forge:new-spec auth-system        # create a project spec
+/forge:new-spec data-export        # create another
 
 /forge:list                      # see what's there
 

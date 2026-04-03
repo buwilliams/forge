@@ -130,7 +130,7 @@ Print a completion summary:
   constitution.md — <written | already existed | skipped>
 
 Next steps:
-  /forge:new-project <work-name>   Create a new project spec
+  /forge:new-spec <work-name>   Create a new project spec
   /forge:list              List existing project specs
 ```
 
