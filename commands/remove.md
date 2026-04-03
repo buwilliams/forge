@@ -56,7 +56,7 @@ and stop.
 
 ## Step 2: Display and confirm
 
-Read `<SPEC_DIR>/project-setup.md` if it exists and extract the first heading (`# ...`) as the title.
+Read `<SPEC_DIR>/project.md` if it exists and extract the first heading (`# ...`) as the title.
 
 Check the current state of the spec:
 - Count files in `todo/`, `working/`, `done/`, `blocked/`
@@ -66,7 +66,7 @@ Print a summary:
 [forge:remove] About to permanently delete:
 
   <SPEC_DIR>
-  Title:  <title or "(no project-setup.md)">
+  Title:  <title or "(no project.md)">
   Status: <brief status — e.g., "3 tasks done, 2 pending" or "not started">
 
 This cannot be undone. Type 'confirm' to delete, or anything else to cancel.

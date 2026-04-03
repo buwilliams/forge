@@ -149,7 +149,7 @@ Examples of good blocked reasons:
 
 ## Project Spec Reminder
 
-The project-setup.md you receive contains `## Global Constraints`. These are non-negotiable for every task. Verify compliance with each applicable constraint before emitting `<task-complete>`. The tasks-agent should have included these as explicit verification steps — if any are missing, check them anyway.
+The project.md you receive contains `## Global Constraints`. These are non-negotiable for every task. Verify compliance with each applicable constraint before emitting `<task-complete>`. The tasks-agent should have included these as explicit verification steps — if any are missing, check them anyway.
 
 ---
 

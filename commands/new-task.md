@@ -36,7 +36,7 @@ Set:
 - `SLUG` = the directory basename (e.g., `00003_auth_system`)
 - `TASK_SLUG` = everything after the first `_` in the directory name (e.g., `auth_system`)
 
-Verify `<SPEC_DIR>/project-setup.md` exists and contains a `## Global Constraints` section. If not, print:
+Verify `<SPEC_DIR>/project.md` exists and contains a `## Global Constraints` section. If not, print:
 ```
 [forge:new-task] Spec is not fully set up — run /forge:start <work-name> first.
 ```
@@ -61,7 +61,7 @@ Let `TASK_FILE` = `<SPEC_DIR>/todo/<TASK_NUM>_<TASK_SLUG>_task.md`.
 ## Step 3: Load context
 
 Read:
-- `<SPEC_DIR>/project-setup.md` — the project spec, including Global Constraints and execution config
+- `<SPEC_DIR>/project.md` — the project spec, including Global Constraints and execution config
 - All `*.md` files in `<SPEC_DIR>/council/` — available roles and their responsibilities
 
 Also read a sample of existing task files (up to 3 from done/ or todo/) to understand the conventions and patterns already established for this spec.
@@ -86,7 +86,7 @@ Task prompt from user:
 <PROMPT>
 ---
 
-project-setup.md contents (includes Global Constraints and execution config):
+project.md contents (includes Global Constraints and execution config):
 ---
 <PROJECT_SETUP_MD_CONTENTS>
 ---
@@ -116,7 +116,7 @@ Write the task to: <TASK_FILE>
 Follow all the same standards: apply Global Constraints as concrete verification steps,
 add dynamic verification if the task produces observable output, and ensure the task
 is fully self-contained so a fresh agent can execute it with only the task file,
-project-setup.md, and the assigned role's agent file.
+project.md, and the assigned role's agent file.
 ```
 
 Where `<PLAN_DECOMPOSER_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`.
@@ -138,7 +138,7 @@ Print:
 
 ## Behavioral Rules
 
-1. **One task only.** Never create multiple task files or modify plan.md, project-setup.md, or any other spec artifact.
+1. **One task only.** Never create multiple task files or modify plan.md, project.md, or any other spec artifact.
 2. **Follow the same standards as the tasks-agent.** Global Constraints must be concrete verification steps. Dynamic verification is required for tasks with observable output.
 3. **Number sequentially.** The new task number is always one higher than the current maximum across all subdirectories — never reuse a number.
 4. **Use the correct filename format.** `<NNNNN>_<task_slug>_task.md` with 5-digit zero-padded number.

@@ -61,12 +61,12 @@ and stop.
 Set:
 - `SPEC_DIR` = matched directory absolute path (e.g., `<PROJECT_ROOT>/.forge/00003_auth_system`)
 - `FORGE_DIR` = `SPEC_DIR`
-- `DESIGN_FILE` = `<SPEC_DIR>/project-setup.md`
+- `DESIGN_FILE` = `<SPEC_DIR>/project.md`
 - `NAME` = matched directory basename (e.g., `00003_auth_system`)
 
 Verify `DESIGN_FILE` exists using the Read tool. If it does not exist, print:
 ```
-[forge:start] Spec directory found but project-setup.md is missing.
+[forge:start] Spec directory found but project.md is missing.
 Run /forge:new-spec to set up the spec first.
 ```
 and stop.
@@ -108,7 +108,7 @@ If `CLEAN_MODE = true`:
    ```bash
    rm -f <SPEC_DIR>/council.md <SPEC_DIR>/verifier.md <SPEC_DIR>/plan.md
    ```
-3. Strip the Forge execution config from `project-setup.md`: read the file and remove everything from the `---` separator that precedes `## Global Constraints` to the end of the file. Write the truncated version back.
+3. Strip the Forge execution config from `project.md`: read the file and remove everything from the `---` separator that precedes `## Global Constraints` to the end of the file. Write the truncated version back.
 4. Print: `[forge:start] Cleaned. Running full setup...`
 5. Proceed to Step 5 (Resume Check), which will start from the beginning.
 
@@ -126,9 +126,9 @@ Check the current state of `<SPEC_DIR>` and skip forward to the appropriate step
 
 4. `<SPEC_DIR>/council/` has `*.md` files AND `<SPEC_DIR>/verifier.md` does not exist → **skip to Step 8** (Verifier). Print: `[forge:start] Resuming at verifier generation...`
 
-5. `<SPEC_DIR>/council.md` exists AND `<SPEC_DIR>/council/` has no `*.md` files AND `project-setup.md` contains `## Global Constraints` → **skip to Step 7** (Role Agents). Print: `[forge:start] Resuming at role agent generation...`
+5. `<SPEC_DIR>/council.md` exists AND `<SPEC_DIR>/council/` has no `*.md` files AND `project.md` contains `## Global Constraints` → **skip to Step 7** (Role Agents). Print: `[forge:start] Resuming at role agent generation...`
 
-6. `<SPEC_DIR>/council.md` exists AND `project-setup.md` does NOT contain `## Global Constraints` → **skip to Step 6b** (Spec Agent). Print: `[forge:start] Resuming at spec finalization...`
+6. `<SPEC_DIR>/council.md` exists AND `project.md` does NOT contain `## Global Constraints` → **skip to Step 6b** (Spec Agent). Print: `[forge:start] Resuming at spec finalization...`
 
 7. Otherwise: start from Step 6 (Council).
 
@@ -138,7 +138,7 @@ Check the current state of `<SPEC_DIR>` and skip forward to the appropriate step
 
 Print: `[forge:start] Determining council...`
 
-Read `<SPEC_DIR>/project-setup.md`. Read any tech stack files that exist at `PROJECT_ROOT`: `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `go.mod`, `Makefile`, `tsconfig.json`, `Dockerfile`.
+Read `<SPEC_DIR>/project.md`. Read any tech stack files that exist at `PROJECT_ROOT`: `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `go.mod`, `Makefile`, `tsconfig.json`, `Dockerfile`.
 
 Determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted.
 
@@ -170,14 +170,14 @@ You are the spec agent.
 
 Project root: <PROJECT_ROOT>
 Spec dir: <SPEC_DIR>
-project-setup.md path: <SPEC_DIR>/project-setup.md
+project.md path: <SPEC_DIR>/project.md
 
 council.md contents:
 ---
 <COUNCIL_MD_CONTENTS>
 ---
 
-project-setup.md contents:
+project.md contents:
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -199,7 +199,7 @@ product.md contents:
 <SPEC_AGENT_INSTRUCTIONS>
 ```
 
-After the agent returns, read and display the generated portion of `project-setup.md`.
+After the agent returns, read and display the generated portion of `project.md`.
 
 If `ASK_MODE = true`: Ask `Approve these constraints and execution config? Reply 'approve' to proceed, or describe changes.` If changes requested, re-invoke the spec agent with feedback appended. Repeat until approved.
 If `ASK_MODE = false`: Print `[forge:start] Spec finalized.` and proceed.
@@ -210,7 +210,7 @@ If `ASK_MODE = false`: Print `[forge:start] Spec finalized.` and proceed.
 
 Print: `[forge:start] Generating role agents...`
 
-Read `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Read project-setup.md and council.md. Invoke the Agent tool:
+Read `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Read project.md and council.md. Invoke the Agent tool:
 
 ```
 You are the roles agent.
@@ -223,7 +223,7 @@ council.md contents:
 <COUNCIL_MD_CONTENTS>
 ---
 
-project-setup.md contents (includes Forge execution config):
+project.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -242,7 +242,7 @@ If `ASK_MODE = false`: Print `[forge:start] Role agents generated: <comma-separa
 
 Print: `[forge:start] Generating verifier...`
 
-Determine `PROJECT_TYPE`: if `project-setup.md` references code files, languages, or tech stack → `technical`; otherwise → `general`.
+Determine `PROJECT_TYPE`: if `project.md` references code files, languages, or tech stack → `technical`; otherwise → `general`.
 
 Determine template path:
 - `technical` → `${CLAUDE_PLUGIN_ROOT}/templates/verifier-technical.template.md`
@@ -258,7 +258,7 @@ Spec dir: <SPEC_DIR>
 PROJECT_TYPE: <PROJECT_TYPE>
 Template path: <TEMPLATE_PATH>
 
-project-setup.md contents:
+project.md contents:
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -289,7 +289,7 @@ You are the tasks agent.
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>
 
-project-setup.md contents (includes Forge execution config):
+project.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -313,9 +313,9 @@ Print: `[forge:start] <N> tasks ready.`
 
 ## Step 10: Execute
 
-**Read max tries from project-setup.md:**
+**Read max tries from project.md:**
 
-Search `<SPEC_DIR>/project-setup.md` for a line matching the pattern `\*\*Max task tries:\*\*\s*(\d+)`. Extract the integer. If absent or not parseable, default to `3`. Store as `MAX_TRIES`.
+Search `<SPEC_DIR>/project.md` for a line matching the pattern `\*\*Max task tries:\*\*\s*(\d+)`. Extract the integer. If absent or not parseable, default to `3`. Store as `MAX_TRIES`.
 
 **Print execution summary:**
 ```
@@ -383,7 +383,7 @@ Read `<SPEC_DIR>/working/<taskname>.md`. Parse the `## Role` section (the first 
 
 Check whether `<SPEC_DIR>/council/<ROLE>.md` exists. If it does, read it as `AGENT_INSTRUCTIONS`. If not, read `${CLAUDE_PLUGIN_ROOT}/agents/executor.md` as `AGENT_INSTRUCTIONS`.
 
-Read `<SPEC_DIR>/project-setup.md` as `PROJECT_CONTENTS`.
+Read `<SPEC_DIR>/project.md` as `PROJECT_CONTENTS`.
 
 Read all `*.md` files in `<SPEC_DIR>/council/` as `COUNCIL_FILES`.
 
@@ -562,24 +562,24 @@ then re-run `/forge:start <SLUG>` to retry.
 Review each blocked task and its reason above. You can:
 - Move a task from `blocked/` back to `todo/` manually to retry it as-is
 - Edit the task file before moving it back, to clarify requirements or add context
-- Edit `project-setup.md` (the `## Global Constraints` or other sections) if a constraint is causing failures
+- Edit `project.md` (the `## Global Constraints` or other sections) if a constraint is causing failures
 - Run `/forge:start <SLUG>` to resume — completed tasks are not re-run
 ```
 
 Print:
 ```
 [forge:start] Blocked summary written to <SPEC_DIR>/blocked-summary.md
-[forge:start] Review it, edit task files or project-setup.md as needed, then re-run /forge:start <SLUG>.
+[forge:start] Review it, edit task files or project.md as needed, then re-run /forge:start <SLUG>.
 ```
 
 ---
 
 ## Error Handling
 
-- **project-setup.md missing:** Error and stop after Step 1.
+- **project.md missing:** Error and stop after Step 1.
 - **git init fails:** Error and stop after Step 2.
 - **Agent tool invocation fails:** Print `[forge:start] Error invoking agent for task <taskname>. Treating as no-signal.` Increment attempt count and move back to todo/.
-- **project-setup.md missing `**Max task tries:**` line:** Default to 3.
+- **project.md missing `**Max task tries:**` line:** Default to 3.
 - **council/ has no agent file for a task's role:** Use `executor.md` silently.
 - **working/ contains multiple files on resume:** Use the lexicographically first one.
 

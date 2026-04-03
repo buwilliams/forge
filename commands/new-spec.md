@@ -103,9 +103,9 @@ Incorporate feedback and redisplay. Repeat until the user types `accept` (case-i
 mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <SPEC_DIR>/council
 ```
 
-Write the finalized spec to `<SPEC_DIR>/project-setup.md`.
+Write the finalized spec to `<SPEC_DIR>/project.md`.
 
-**Determine PROJECT_TYPE** from the content of `project-setup.md`: if the spec describes software, code, infrastructure, or technical tooling → `technical`; otherwise → `general`. Let `PROJECT_TYPE` = `technical` or `general`.
+**Determine PROJECT_TYPE** from the content of `project.md`: if the spec describes software, code, infrastructure, or technical tooling → `technical`; otherwise → `general`. Let `PROJECT_TYPE` = `technical` or `general`.
 
 Print: `[forge:new] Spec saved (<PROJECT_TYPE>). Setting up your project...`
 
@@ -115,7 +115,7 @@ Print: `[forge:new] Spec saved (<PROJECT_TYPE>). Setting up your project...`
 
 Print: `[forge:new] Determining council...`
 
-Read `<SPEC_DIR>/project-setup.md` in full. Examine the tech stack files already loaded. Based on the project intent and tech stack, determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted (e.g., `security-engineer`, `api-designer`, `data-engineer`, `ux-engineer`, `writer`, `editor`).
+Read `<SPEC_DIR>/project.md` in full. Examine the tech stack files already loaded. Based on the project intent and tech stack, determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted (e.g., `security-engineer`, `api-designer`, `data-engineer`, `ux-engineer`, `writer`, `editor`).
 
 Write `<SPEC_DIR>/council.md`:
 
@@ -143,14 +143,14 @@ You are the spec agent.
 
 Project root: <PROJECT_ROOT>
 Spec dir: <SPEC_DIR>
-project-setup.md path: <SPEC_DIR>/project-setup.md
+project.md path: <SPEC_DIR>/project.md
 
 council.md contents:
 ---
 <COUNCIL_MD_CONTENTS>
 ---
 
-project-setup.md contents:
+project.md contents:
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -174,7 +174,7 @@ product.md contents (use the What and Why to ensure constraints align with the p
 
 Where `<SPEC_AGENT_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/spec.md`.
 
-After the agent returns, read and display the generated portion of `<SPEC_DIR>/project-setup.md` (from `---` separator to end of file).
+After the agent returns, read and display the generated portion of `<SPEC_DIR>/project.md` (from `---` separator to end of file).
 
 Print: `[forge:new] Spec complete.`
 
@@ -197,7 +197,7 @@ council.md contents:
 <COUNCIL_MD_CONTENTS>
 ---
 
-project-setup.md contents (includes Forge execution config):
+project.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -229,7 +229,7 @@ Spec dir: <SPEC_DIR>
 PROJECT_TYPE: <PROJECT_TYPE>
 Template path: <TEMPLATE_PATH>
 
-project-setup.md contents:
+project.md contents:
 ---
 <PROJECT_MD_CONTENTS>
 ---
@@ -262,7 +262,7 @@ You are the tasks agent.
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>
 
-project-setup.md contents (includes Forge execution config):
+project.md contents (includes Forge execution config):
 ---
 <PROJECT_MD_CONTENTS>
 ---

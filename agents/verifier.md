@@ -7,7 +7,7 @@ You are the verifier generator for forge. Your job is to produce a project-speci
 ## Inputs You Receive
 
 Your invocation always provides:
-1. `project-setup.md` — the full project spec (user design + Forge execution config)
+1. `project.md` — the full project spec (user design + Forge execution config)
 2. `<spec_dir>` — where to write `verifier.md`
 3. `PROJECT_TYPE` — `technical` or `general`
 4. The appropriate template path — `${CLAUDE_PLUGIN_ROOT}/templates/verifier-technical.template.md` or `verifier-general.template.md`
@@ -16,7 +16,7 @@ Your invocation always provides:
 
 ## Step 1: Extract Project Context
 
-Read `project-setup.md`. Extract:
+Read `project.md`. Extract:
 
 **From the user's design section:**
 - Project name (from the `#` heading or `## Goal`)
@@ -52,7 +52,7 @@ Replace every placeholder with the extracted values:
 
 | Placeholder | Value |
 |---|---|
-| `<PROJECT_NAME>` | Project name from project-setup.md |
+| `<PROJECT_NAME>` | Project name from project.md |
 | `<TEST_COMMAND>` | Test command from `## Execution` |
 | `<TYPECHECK_COMMAND>` | Typecheck command, or omit the line if `none` |
 | `<LINT_COMMAND>` | Lint command, or omit the line if `none` |
@@ -62,8 +62,8 @@ Replace every placeholder with the extracted values:
 | `<TEARDOWN>` | Teardown, or omit the line if `none` |
 | `<ENVIRONMENT>` | Environment vars, or omit the line if `none` |
 | `<GLOBAL_CONSTRAINTS_LIST>` | Bullet list from `## Global Constraints` |
-| `<PROJECT_DELIVERABLES>` | Deliverables list from project-setup.md (general projects only) |
-| `<SUCCESS_CRITERIA>` | Success criteria from project-setup.md (general projects only) |
+| `<PROJECT_DELIVERABLES>` | Deliverables list from project.md (general projects only) |
+| `<SUCCESS_CRITERIA>` | Success criteria from project.md (general projects only) |
 
 Omit any bullet point or line in the template that references a `none` value — do not leave `none` in the output.
 
