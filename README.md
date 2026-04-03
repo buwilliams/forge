@@ -25,18 +25,20 @@ Forge is a Claude Code plugin. See the [Claude Code documentation](https://docs.
 Always forward. Completed work is never re-run. Interrupted runs pick up where they stopped.
 
 ```
-/forge:setup                              # set up product.md + constitution.md (once per project)
-/forge:new-spec auth-system               # create a new project spec interactively
-/forge:info                               # summarize specs and task progress
-/forge:list                               # list specs and their status
-/forge:list --all                         # include completed specs
-/forge:start auth-system                  # execute tasks for a spec
-/forge:start auth-system --ask            # pause for approval at each phase
-/forge:start auth-system --clean          # clear state and start over
-/forge:stop auth-system                   # pause a run cleanly
-/forge:new-task auth-system <prompt>      # add a new task to an existing spec
-/forge:remove old-experiment              # remove a spec
+/forge:setup                                      # set up product.md + constitution.md (once per project)
+/forge:new-spec <name>                            # create a new project spec interactively
+/forge:start <name>                               # execute tasks for a spec
+/forge:start <name> --ask                         # pause for approval at each phase
+/forge:start <name> --clean                       # clear state and start over
+/forge:stop <name>                                # pause a run cleanly
+/forge:new-task <name> <prompt>                   # add a new task to an existing spec
+/forge:remove <name>                              # remove a spec
+/forge:list                                       # list incomplete specs and their status
+/forge:list --all                                 # include completed specs
+/forge:info                                       # summarize specs and task progress
 ```
+
+`<name>` accepts a full spec name (`auth-system`), its number (`00003`), or an unambiguous prefix (`auth`).
 
 Project specs live in numbered directories under `.forge/`:
 
