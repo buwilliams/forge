@@ -38,7 +38,34 @@ Always forward — completed work is never re-run.
 
 ## Usage
 
-Open a Claude Code session in your project directory, then:
+### Spec-first workflow (recommended)
+
+Forge includes native spec management. Start here when beginning a new project:
+
+```
+/forge:init                        # create constitution.md + product.md (once per project)
+/forge:create auth-system          # create a new project spec interactively
+/forge:list                        # see all specs and their status
+/forge:forge auth-system           # run forge on a named spec
+/forge:forge auth-system --ask     # run with approval gates at each phase
+/forge:forge auth-system --clean   # clear state and start over
+/forge:del old-experiment          # delete a spec
+```
+
+Project specs live in numbered directories under `.forge/`:
+```
+.forge/
+  constitution.md          # non-negotiable principles for the whole project
+  product.md               # what and why (non-technical requirements)
+  00001_auth_system/
+    design.md              # the project spec
+    pipeline.md            # generated
+    todo/  working/  done/ # task lifecycle
+```
+
+### Direct workflow
+
+You can also pass a design file directly — useful for one-off runs or integrating with spec-kit:
 
 ```
 /forge path/to/design.md           # run fully automated (no prompts)
@@ -47,8 +74,6 @@ Open a Claude Code session in your project directory, then:
 ```
 
 With `--ask`, forge pauses at the council, pipeline, and agent generation phases, letting you review and request changes before proceeding. Without it, forge auto-approves everything and runs to completion. Interrupted runs resume automatically on the next invocation.
-
-Your design document should describe what you want to build and any non-negotiable constraints (e.g., no external dependencies, match the existing voice and tone, all decisions must be reversible).
 
 **Testing forge itself:**
 
@@ -81,6 +106,7 @@ Your design document should describe what you want to build and any non-negotiab
 
 - [goal.md](docs/goal.md) — problem statement and motivation
 - [plan.md](docs/plan.md) — full implementation blueprint
+- [support-specs.md](docs/support-specs.md) — native spec management (constitution, product, project specs)
 - [spec-kit.md](docs/spec-kit.md) — using spec-kit with Forge for spec-driven development
 
 ## Requirements

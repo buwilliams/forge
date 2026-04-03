@@ -1,6 +1,13 @@
 {
   "name": "forge",
-  "version": "0.1.0",
+  "version": "1.2",
   "description": "Pipeline-based project execution for Claude Code agents",
-  "commands": ["./commands/forge.md"]
+  "commands": [
+    "./commands/forge.md",
+    "./commands/forge-init.md",
+    "./commands/forge-create.md",
+    "./commands/forge-list.md",
+    "./commands/forge-del.md",
+    "./commands/forge-forge.md"
+  ]
 }
