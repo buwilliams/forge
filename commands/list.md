@@ -80,8 +80,8 @@ Print:
 [forge:list] Project specs in .forge/
 
 Meta-specs:
-  constitution.md   <exists | not found — run /forge:init to create>
-  product.md        <exists | not found — run /forge:init to create>
+  constitution.md   <exists | not found — run /forge:setup to create>
+  product.md        <exists | not found — run /forge:setup to create>
 ```
 
 If no numbered specs exist:

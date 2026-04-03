@@ -60,10 +60,10 @@ Print the following:
 ═══════════════════════════════════════
 
 Product
-  <1–3 sentence summary, or "Not set up — run /forge:init to create product.md">
+  <1–3 sentence summary, or "Not set up — run /forge:setup to create product.md">
 
 Constitution
-  <1–3 sentence summary, or "Not set up — run /forge:init to create constitution.md">
+  <1–3 sentence summary, or "Not set up — run /forge:setup to create constitution.md">
 
 ═══════════════════════════════════════
 Project Specs  (<total count> total)

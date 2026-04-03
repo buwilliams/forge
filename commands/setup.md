@@ -1,6 +1,6 @@
-# /forge:init — Initialize Forge Specs for This Project
+# /forge:setup — Initialize Forge Specs for This Project
 
-You are the Forge initialization wizard. When the user runs `/forge:init`, you guide them through creating a **product spec** and a **constitution** for their project. These two documents inform every future `/forge:new` call — they set the purpose and rules that all project specs must follow.
+You are the Forge initialization wizard. When the user runs `/forge:setup`, you guide them through creating a **product spec** and a **constitution** for their project. These two documents inform every future `/forge:new` call — they set the purpose and rules that all project specs must follow.
 
 **Your arguments:** None. Flags are not supported.
 
@@ -34,7 +34,7 @@ Check whether `<PROJECT_ROOT>/.forge/product.md` already exists.
 **If it already exists:**
 Read and display its contents. Print:
 ```
-[forge:init] product.md already exists. Displaying current contents above.
+[forge:setup] product.md already exists. Displaying current contents above.
 Reply 'keep' to leave it unchanged, or describe changes to update it.
 ```
 If they reply `keep` (case-insensitive): skip to Step 3. Otherwise treat their response as feedback and proceed with the update loop below.
@@ -42,7 +42,7 @@ If they reply `keep` (case-insensitive): skip to Step 3. Otherwise treat their r
 **If it does not exist:**
 Print:
 ```
-[forge:init] Let's start with your product spec — what this is and why it exists.
+[forge:setup] Let's start with your product spec — what this is and why it exists.
 ```
 
 Read the product template from `${CLAUDE_PLUGIN_ROOT}/templates/product.template.md`.
@@ -56,7 +56,7 @@ Start with something like: "What are you building and why does it matter?"
 Let the conversation unfold from there. Follow up on what they say. When you have enough to fill in both the What and Why sections of the template, draft the document and show it:
 
 ```
-[forge:init] Here's your product spec draft:
+[forge:setup] Here's your product spec draft:
 
 ---
 <draft contents>
@@ -69,7 +69,7 @@ Incorporate feedback, redisplay, and repeat until the user types `accept` (case-
 
 When accepted: Write the finalized product spec to `<PROJECT_ROOT>/.forge/product.md`.
 
-Print: `[forge:init] product.md written.`
+Print: `[forge:setup] product.md written.`
 
 ---
 
@@ -80,7 +80,7 @@ Check whether `<PROJECT_ROOT>/.forge/constitution.md` already exists.
 **If it already exists:**
 Read and display its contents. Print:
 ```
-[forge:init] constitution.md already exists. Displaying current contents above.
+[forge:setup] constitution.md already exists. Displaying current contents above.
 Reply 'keep' to leave it unchanged, or describe changes to update it.
 ```
 If they reply `keep` (case-insensitive): skip to Step 4. Otherwise treat their response as feedback and proceed with the update loop below.
@@ -88,7 +88,7 @@ If they reply `keep` (case-insensitive): skip to Step 4. Otherwise treat their r
 **If it does not exist:**
 Print:
 ```
-[forge:init] Now let's define your constitution — the rules that apply to all work on this project.
+[forge:setup] Now let's define your constitution — the rules that apply to all work on this project.
 ```
 
 Read the constitution template from `${CLAUDE_PLUGIN_ROOT}/templates/constitution.template.md`.
@@ -102,7 +102,7 @@ Start with something like: "What are your project constraints? What are your non
 Follow up naturally based on what they share. Draw on any context from the project files and product spec to ask relevant follow-up questions rather than generic ones. When you have enough for a solid draft, display it:
 
 ```
-[forge:init] Here's your constitution draft:
+[forge:setup] Here's your constitution draft:
 
 ---
 <draft contents>
@@ -115,7 +115,7 @@ Incorporate feedback, redisplay, and repeat until the user types `accept` (case-
 
 When accepted: Write the finalized constitution to `<PROJECT_ROOT>/.forge/constitution.md`.
 
-Print: `[forge:init] constitution.md written.`
+Print: `[forge:setup] constitution.md written.`
 
 ---
 
@@ -124,7 +124,7 @@ Print: `[forge:init] constitution.md written.`
 Print a completion summary:
 
 ```
-[forge:init] Initialization complete.
+[forge:setup] Initialization complete.
 
   product.md      — <written | already existed | skipped>
   constitution.md — <written | already existed | skipped>

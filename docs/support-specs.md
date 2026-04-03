@@ -52,12 +52,12 @@ Forge detects the project type automatically by scanning for tech stack files (`
 
 ## Commands
 
-### `/forge:init`
+### `/forge:setup`
 
 Initializes the project by creating `constitution.md` and optionally `product.md` through a guided conversation.
 
 ```
-/forge:init
+/forge:setup
 ```
 
 Forge reads the current project context (README, package.json, CLAUDE.md, etc.) to ask informed questions rather than presenting blank forms. You answer conversationally; Forge drafts the document. When you're satisfied, type `accept` to write the file.
@@ -136,7 +136,7 @@ Forge displays the spec, its current status, and how much work has been done —
 ## Workflow
 
 ```
-/forge:init                      # set up constitution + product spec (once per project)
+/forge:setup                      # set up constitution + product spec (once per project)
 
 /forge:new auth-system        # create a project spec
 /forge:new data-export        # create another
@@ -167,7 +167,7 @@ Templates live in `templates/` in the Forge plugin directory. They serve as stru
 
 | Template | Used by |
 |---|---|
-| `constitution.template.md` | `/forge:init` (constitution step) |
-| `product.template.md` | `/forge:init` (product step) |
+| `constitution.template.md` | `/forge:setup` (constitution step) |
+| `product.template.md` | `/forge:setup` (product step) |
 | `project-technical.template.md` | `/forge:new` when tech stack detected |
 | `project-general.template.md` | `/forge:new` for non-technical projects |

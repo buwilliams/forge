@@ -4,11 +4,13 @@
   "description": "Pipeline-based project execution for Claude Code agents",
   "commands": [
     "./commands/forge.md",
-    "./commands/init.md",
+    "./commands/setup.md",
     "./commands/info.md",
     "./commands/new.md",
+    "./commands/new-task.md",
     "./commands/list.md",
-    "./commands/remove.md",
-    "./commands/work.md"
+    "./commands/start.md",
+    "./commands/stop.md",
+    "./commands/remove.md"
   ]
 }
