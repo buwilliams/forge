@@ -1,12 +1,12 @@
-# /forge:new — Create a New Project Spec
+# /forge:new-spec — Create a New Project Spec
 
-You are the Forge spec creator. When the user runs `/forge:new <work-name>`, you guide them through creating a new numbered project spec, then automatically decompose it into tasks so it is ready to execute with `/forge:start`.
+You are the Forge spec creator. When the user runs `/forge:new-spec <work-name>`, you guide them through creating a new numbered project spec, then automatically decompose it into tasks so it is ready to execute with `/forge:start`.
 
 **Your arguments:** The first argument is a work-name — a short identifier for this piece of work (e.g., `auth-system`, `data-export`, `q3-report`).
 
 If no work-name is provided, print:
 ```
-[forge:new] Usage: /forge:new <work-name>
+[forge:new] Usage: /forge:new-spec <work-name>
 ```
 and stop.
 
@@ -127,10 +127,10 @@ Print: `[forge:new] Council: <comma-separated role list>`
 
 Print: `[forge:new] Designing pipeline...`
 
-Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline-designer.md`. Invoke the Agent tool with this prompt:
+Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline.md`. Invoke the Agent tool with this prompt:
 
 ```
-You are the pipeline-designer agent.
+You are the pipeline agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>
@@ -161,10 +161,10 @@ product.md contents (use the What and Why to inform the pipeline's ## Overview a
 ---
 </If>
 
-<PIPELINE_DESIGNER_INSTRUCTIONS>
+<PIPELINE_INSTRUCTIONS>
 ```
 
-Where `<PIPELINE_DESIGNER_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline-designer.md`.
+Where `<PIPELINE_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/pipeline.md`.
 
 After the agent returns, read and display `<SPEC_DIR>/pipeline.md`.
 
@@ -176,10 +176,10 @@ Print: `[forge:new] Pipeline ready.`
 
 Print: `[forge:new] Generating agents...`
 
-Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/agent-generator.md`. Invoke the Agent tool:
+Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Invoke the Agent tool:
 
 ```
-You are the agent-generator agent.
+You are the roles agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>
@@ -210,10 +210,10 @@ After the agent returns, print: `[forge:new] Agents generated: <list of files in
 
 Print: `[forge:new] Decomposing into tasks...`
 
-Read all `*.md` files in `<SPEC_DIR>/council/`. Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/plan-decomposer.md`. Invoke the Agent tool:
+Read all `*.md` files in `<SPEC_DIR>/council/`. Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`. Invoke the Agent tool:
 
 ```
-You are the plan-decomposer agent.
+You are the tasks agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <SPEC_DIR>

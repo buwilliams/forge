@@ -116,7 +116,7 @@ If they describe changes: revise `council.md` in place to incorporate the feedba
 
 Print: `[forge] Designing pipeline...`
 
-Invoke the `pipeline-designer` agent using the Agent tool. Pass it:
+Invoke the `pipeline` agent using the Agent tool. Pass it:
 - The full contents of `<FORGE_DIR>/council.md`
 - The full contents of the `design.md` file
 - The path `<FORGE_DIR>/pipeline.md` (where it should write output)
@@ -126,7 +126,7 @@ The agent will write `<FORGE_DIR>/pipeline.md`. After the Agent call returns, re
 
 **Agent invocation prompt template:**
 ```
-You are the pipeline-designer agent.
+You are the pipeline agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <FORGE_DIR>
@@ -146,7 +146,7 @@ design.md contents:
 <PIPELINE_DESIGNER_INSTRUCTIONS>
 ```
 
-Where `<PIPELINE_DESIGNER_INSTRUCTIONS>` is the full contents of the `pipeline-designer.md` agent file from the forge plugin's `agents/` directory.
+Where `<PIPELINE_DESIGNER_INSTRUCTIONS>` is the full contents of the `pipeline.md` agent file from the forge plugin's `agents/` directory.
 
 **Conversational approval loop:**
 
@@ -154,7 +154,7 @@ If `ASK_MODE = false`: print `[forge] Pipeline auto-approved.` and proceed to Ph
 
 If `ASK_MODE = true`: Ask the user: `Approve this pipeline? Reply 'approve' to proceed, or describe changes.`
 
-If they describe changes: re-invoke `pipeline-designer` agent with the same inputs plus the feedback appended as:
+If they describe changes: re-invoke `pipeline` agent with the same inputs plus the feedback appended as:
 ```
 User feedback on the current pipeline.md:
 ---
@@ -171,11 +171,11 @@ Read and display the revised `pipeline.md`. Repeat until the user approves.
 
 Print: `[forge] Generating project agents...`
 
-Read `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, and the design file. Invoke the `agent-generator` agent using the Agent tool. Pass it all three documents plus the .forge dir path.
+Read `<FORGE_DIR>/council.md`, `<FORGE_DIR>/pipeline.md`, and the design file. Invoke the `roles-agent` agent using the Agent tool. Pass it all three documents plus the .forge dir path.
 
 **Agent invocation prompt template:**
 ```
-You are the agent-generator agent.
+You are the roles agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <FORGE_DIR>
@@ -198,7 +198,7 @@ design.md contents:
 <AGENT_GENERATOR_INSTRUCTIONS>
 ```
 
-Where `<AGENT_GENERATOR_INSTRUCTIONS>` is the full contents of the `agent-generator.md` agent file from the forge plugin's `agents/` directory.
+Where `<AGENT_GENERATOR_INSTRUCTIONS>` is the full contents of the `roles.md` agent file from the forge plugin's `agents/` directory.
 
 After the agent returns, read all `.md` files in `<FORGE_DIR>/council/`. Display a summary:
 - List each file: `  - <filename>: <first line of file>`
@@ -210,7 +210,7 @@ If `ASK_MODE = false`: print `[forge] Agents auto-approved.` and proceed to Phas
 
 If `ASK_MODE = true`: Ask the user: `Do these agents look correct? Reply 'approve' or describe issues.`
 
-If they describe issues: re-invoke `agent-generator` with the same inputs plus the existing generated files and the feedback. The agent will revise files in place. Display updated summaries. Repeat until approved.
+If they describe issues: re-invoke `roles-agent` with the same inputs plus the existing generated files and the feedback. The agent will revise files in place. Display updated summaries. Repeat until approved.
 
 Print the list of generated roles and proceed to Phase 6.
 
@@ -220,11 +220,11 @@ Print the list of generated roles and proceed to Phase 6.
 
 Print: `[forge] Decomposing work into tasks...`
 
-Read `<FORGE_DIR>/pipeline.md`, the design file, and all `*.md` files in `<FORGE_DIR>/council/`. Invoke the `plan-decomposer` agent using the Agent tool.
+Read `<FORGE_DIR>/pipeline.md`, the design file, and all `*.md` files in `<FORGE_DIR>/council/`. Invoke the `tasks-agent` agent using the Agent tool.
 
 **Agent invocation prompt template:**
 ```
-You are the plan-decomposer agent.
+You are the tasks agent.
 
 Project root: <PROJECT_ROOT>
 Forge dir: <FORGE_DIR>
@@ -251,7 +251,7 @@ Council agent files:
 <PLAN_DECOMPOSER_INSTRUCTIONS>
 ```
 
-Where `<PLAN_DECOMPOSER_INSTRUCTIONS>` is the full contents of the `plan-decomposer.md` agent file from the forge plugin's `agents/` directory.
+Where `<PLAN_DECOMPOSER_INSTRUCTIONS>` is the full contents of the `tasks.md` agent file from the forge plugin's `agents/` directory.
 
 After the agent returns:
 - Count the `*.md` files in `<FORGE_DIR>/todo/`
@@ -338,7 +338,7 @@ If `ATTEMPT_MAP[<taskname>]` >= `MAX_TRIES`:
 
 Read the task file at `<FORGE_DIR>/working/<taskname>.md`. Parse the `## Role` section (look for the line after `## Role` that is not blank). Let `ROLE` = that value, trimmed and lowercased.
 
-Check whether `<FORGE_DIR>/council/<ROLE>.md` exists using Glob. If it does, read its contents as `AGENT_INSTRUCTIONS`. If it does not (role absent, unrecognized, or missing), read the forge plugin's `agents/task-executor.md` as `AGENT_INSTRUCTIONS` and note the fallback in-context.
+Check whether `<FORGE_DIR>/council/<ROLE>.md` exists using Glob. If it does, read its contents as `AGENT_INSTRUCTIONS`. If it does not (role absent, unrecognized, or missing), read the forge plugin's `agents/executor.md` as `AGENT_INSTRUCTIONS` and note the fallback in-context.
 
 Read `<FORGE_DIR>/pipeline.md` as `PIPELINE_CONTENTS`.
 
@@ -549,7 +549,7 @@ Print:
 - **Directory name collision (.forge_source mismatch):** Print the error and stop.
 - **Agent tool invocation fails:** Print `[forge] Error invoking agent for task <taskname>. Treating as no-signal.` Increment attempt count and move back to todo/.
 - **pipeline.md missing Max task tries line:** Default to 3. Do not error.
-- **council/ has no agent file for a task's role:** Use `task-executor.md` silently (no user-facing error).
+- **council/ has no agent file for a task's role:** Use `executor.md` silently (no user-facing error).
 - **working/ contains multiple files on resume:** Use the lexicographically first one. This should not happen under normal operation but handle it gracefully.
 - **User presses Esc during execution:** The current working/ file remains as a resume marker. The next `/forge design.md` invocation will detect it in Phase 2 and resume.
 - **Blocked tasks at end of run:** A `<design>-blocked.md` is generated automatically. The user edits it and runs `/forge <design>-blocked.md` to retry.
@@ -558,7 +558,7 @@ Print:
 
 ## Path Resolution
 
-When you need to read agent files from the plugin (e.g., `agents/pipeline-designer.md`, `agents/verifier.md`), resolve them as `${CLAUDE_PLUGIN_ROOT}/agents/<filename>`. `${CLAUDE_PLUGIN_ROOT}` is always set to the plugin's install directory by Claude Code.
+When you need to read agent files from the plugin (e.g., `agents/pipeline.md`, `agents/verifier.md`), resolve them as `${CLAUDE_PLUGIN_ROOT}/agents/<filename>`. `${CLAUDE_PLUGIN_ROOT}` is always set to the plugin's install directory by Claude Code.
 
 ---
 

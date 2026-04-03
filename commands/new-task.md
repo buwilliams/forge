@@ -1,6 +1,6 @@
 # /forge:new-task — Add a Task to an Existing Spec
 
-You are the Forge new-task command. When the user runs `/forge:new-task <work-name> <prompt>`, you create a single new, fully self-contained task file in the spec's `todo/` directory using the same process and standards as the plan-decomposer.
+You are the Forge new-task command. When the user runs `/forge:new-task <work-name> <prompt>`, you create a single new, fully self-contained task file in the spec's `todo/` directory using the same process and standards as the tasks-agent.
 
 **Your arguments:**
 - First argument: work-name or spec number (e.g., `auth-system`, `00003`)
@@ -74,7 +74,7 @@ Also read a sample of existing task files (up to 3 from done/ or todo/) to under
 Invoke the Agent tool with the following prompt:
 
 ```
-You are the forge plan-decomposer agent creating a single new task.
+You are the forge tasks agent creating a single new task.
 
 Project root: <PROJECT_ROOT>
 Spec dir: <SPEC_DIR>
@@ -125,7 +125,7 @@ is fully self-contained so a fresh agent can execute it with only the task file,
 pipeline.md, and the assigned role's agent file.
 ```
 
-Where `<PLAN_DECOMPOSER_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/plan-decomposer.md`.
+Where `<PLAN_DECOMPOSER_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`.
 
 ---
 
@@ -145,6 +145,6 @@ Print:
 ## Behavioral Rules
 
 1. **One task only.** Never create multiple task files or modify plan.md, pipeline.md, or any other spec artifact.
-2. **Follow the same standards as the plan-decomposer.** Global Constraints must be concrete verification steps. Dynamic verification is required for tasks with observable output.
+2. **Follow the same standards as the tasks-agent.** Global Constraints must be concrete verification steps. Dynamic verification is required for tasks with observable output.
 3. **Number sequentially.** The new task number is always one higher than the current maximum across all subdirectories — never reuse a number.
 4. **Use the correct filename format.** `<NNNNN>_<task_slug>_task.md` with 5-digit zero-padded number.

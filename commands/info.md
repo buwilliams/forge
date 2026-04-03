@@ -77,7 +77,7 @@ Project Specs  (<total count> total)
 Total tasks:  <done>✓ done   <todo + working> pending   <blocked> blocked
 
   <If no specs exist:>
-  No project specs yet. Run /forge:new <work-name> to create one.
+  No project specs yet. Run /forge:new-spec <work-name> to create one.
 ```
 
 ---

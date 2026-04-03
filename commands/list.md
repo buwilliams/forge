@@ -87,7 +87,7 @@ Meta-specs:
 If no numbered specs exist:
 ```
 
-No project specs yet. Run /forge:new <work-name> to create one.
+No project specs yet. Run /forge:new-spec <work-name> to create one.
 ```
 
 If numbered specs exist but all are filtered out (all are `done`/`partial` and `ALL_MODE = false`):
