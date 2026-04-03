@@ -19,7 +19,7 @@ Good constitution entries are checkable assertions:
 
 The **product spec** captures the what and why — non-technical requirements that every piece of work must serve. It defines vision, target users, success criteria, and scope boundaries. It is not a technical document; it is the lens through which technical decisions are evaluated.
 
-The product spec informs `/forge:create` so that new project specs stay mission-aligned. If a proposed project spec conflicts with the product's vision or scope, Forge flags it during creation.
+The product spec informs `/forge:new` so that new project specs stay mission-aligned. If a proposed project spec conflicts with the product's vision or scope, Forge flags it during creation.
 
 ### Project specs (`/.forge/<num>_<name>/design.md`)
 
@@ -64,13 +64,13 @@ Forge reads the current project context (README, package.json, CLAUDE.md, etc.) 
 
 If either file already exists, Forge displays it and asks whether to keep or update it.
 
-### `/forge:create <work-name>`
+### `/forge:new <work-name>`
 
 Creates a new numbered project spec through a guided conversation.
 
 ```
-/forge:create auth-system
-/forge:create q3-marketing-report
+/forge:new auth-system
+/forge:new q3-marketing-report
 ```
 
 Forge:
@@ -138,8 +138,8 @@ Forge displays the spec, its current status, and how much work has been done —
 ```
 /forge:init                      # set up constitution + product spec (once per project)
 
-/forge:create auth-system        # create a project spec
-/forge:create data-export        # create another
+/forge:new auth-system        # create a project spec
+/forge:new data-export        # create another
 
 /forge:list                      # see what's there
 
@@ -155,7 +155,7 @@ Forge displays the spec, its current status, and how much work has been done —
 
 ## Relationship to spec-kit
 
-If you use [spec-kit](https://github.com/github/spec-kit) to produce a `spec.md`, you can still use it as a starting point. Copy or reference the spec-kit output as your `design.md` inside a Forge spec directory, or use `/forge:create` to produce the spec directly within Forge and skip spec-kit entirely.
+If you use [spec-kit](https://github.com/github/spec-kit) to produce a `spec.md`, you can still use it as a starting point. Copy or reference the spec-kit output as your `design.md` inside a Forge spec directory, or use `/forge:new` to produce the spec directly within Forge and skip spec-kit entirely.
 
 The Forge spec system covers the same territory as spec-kit's `/speckit.constitute`, `/speckit.specify`, and `/speckit.plan` commands, with tighter integration into the Forge execution pipeline.
 
@@ -169,5 +169,5 @@ Templates live in `templates/` in the Forge plugin directory. They serve as stru
 |---|---|
 | `constitution.template.md` | `/forge:init` (constitution step) |
 | `product.template.md` | `/forge:init` (product step) |
-| `project-technical.template.md` | `/forge:create` when tech stack detected |
-| `project-general.template.md` | `/forge:create` for non-technical projects |
+| `project-technical.template.md` | `/forge:new` when tech stack detected |
+| `project-general.template.md` | `/forge:new` for non-technical projects |

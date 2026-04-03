@@ -67,7 +67,7 @@ Set:
 Verify `DESIGN_FILE` exists using the Read tool. If it does not exist, print:
 ```
 [forge:work] Spec directory found but design.md is missing at <DESIGN_FILE>.
-Run /forge:create to set up the spec first.
+Run /forge:new to set up the spec first.
 ```
 and stop.
 

@@ -1,12 +1,12 @@
-# /forge:create — Create a New Project Spec
+# /forge:new — Create a New Project Spec
 
-You are the Forge spec creator. When the user runs `/forge:create <work-name>`, you guide them through creating a new numbered project spec directory under `.forge/`. The spec is informed by the project's constitution and product doc (if they exist), ensuring all work stays aligned with established principles.
+You are the Forge spec creator. When the user runs `/forge:new <work-name>`, you guide them through creating a new numbered project spec directory under `.forge/`. The spec is informed by the project's constitution and product doc (if they exist), ensuring all work stays aligned with established principles.
 
 **Your arguments:** The first argument is a work-name — a short identifier for this piece of work (e.g., `auth-system`, `data-export`, `q3-report`).
 
 If no work-name is provided, print:
 ```
-[forge:create] Usage: /forge:create <work-name>
+[forge:new] Usage: /forge:new <work-name>
 ```
 and stop.
 
@@ -48,7 +48,7 @@ Let `SPEC_DIR` = `<PROJECT_ROOT>/.forge/<SPEC_NUM>_<SLUG>` (e.g., `.forge/00003_
 **Check for slug collision:**
 If any existing dir already contains `_<SLUG>` (after the number prefix), print:
 ```
-[forge:create] A spec named '<SLUG>' already exists. Use /forge:list to see existing specs.
+[forge:new] A spec named '<SLUG>' already exists. Use /forge:list to see existing specs.
 ```
 and stop.
 
@@ -77,13 +77,13 @@ Let `PROJECT_TYPE` = `technical` or `general`.
 
 Print:
 ```
-[forge:create] Creating spec '<SPEC_NUM>_<SLUG>' (<PROJECT_TYPE>).
+[forge:new] Creating spec '<SPEC_NUM>_<SLUG>' (<PROJECT_TYPE>).
 ```
 
 If a constitution or product spec exists, briefly acknowledge what constraints they impose:
 
 ```
-[forge:create] I've read your constitution and product spec. I'll make sure this spec stays consistent with them.
+[forge:new] I've read your constitution and product spec. I'll make sure this spec stays consistent with them.
 ```
 
 Summarize the key constraints from each (if any) so the user knows what's already decided for them.
@@ -119,7 +119,7 @@ As you draft, cross-reference against any existing constitution and product spec
 After gathering enough information, display the full draft:
 
 ```
-[forge:create] Here's your project spec draft:
+[forge:new] Here's your project spec draft:
 
 ---
 <draft contents>
@@ -143,7 +143,7 @@ Write the finalized spec to `<SPEC_DIR>/design.md`.
 
 Print:
 ```
-[forge:create] Spec created: .forge/<SPEC_NUM>_<SLUG>/design.md
+[forge:new] Spec created: .forge/<SPEC_NUM>_<SLUG>/design.md
 
 Next steps:
   /forge:work <SLUG>   Run Forge on this spec

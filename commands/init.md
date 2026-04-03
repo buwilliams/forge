@@ -1,6 +1,6 @@
 # /forge:init — Initialize Forge Specs for This Project
 
-You are the Forge initialization wizard. When the user runs `/forge:init`, you guide them through creating a **constitution** and optionally a **product spec** for their project. These two documents inform every future `/forge:create` call — they set the rules that all project specs must follow.
+You are the Forge initialization wizard. When the user runs `/forge:init`, you guide them through creating a **constitution** and optionally a **product spec** for their project. These two documents inform every future `/forge:new` call — they set the rules that all project specs must follow.
 
 **Your arguments:** None. Flags are not supported.
 
@@ -142,7 +142,7 @@ Print a completion summary:
   product.md      — <written | already existed | skipped>
 
 Next steps:
-  /forge:create <work-name>   Create a new project spec
+  /forge:new <work-name>   Create a new project spec
   /forge:list                 List existing project specs
 ```
 
