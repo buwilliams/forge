@@ -31,7 +31,7 @@ Always forward. Completed work is never re-run. Interrupted runs resume from whe
 /forge:work auth-system            # run forge on a named spec
 /forge:work auth-system --ask      # pause for approval at each phase
 /forge:work auth-system --clean    # clear state and start over
-/forge:del old-experiment          # delete a spec
+/forge:remove old-experiment       # remove a spec
 ```
 
 Project specs live in numbered directories under `.forge/`:

@@ -121,12 +121,12 @@ Flags work identically to `/forge`:
 - `--ask` — interactive approval at each phase
 - `--clean` — clear forge state and start over from Phase 3
 
-### `/forge:del <work-name>`
+### `/forge:remove <work-name>`
 
 Deletes a project spec directory after confirmation.
 
 ```
-/forge:del auth-system
+/forge:remove auth-system
 ```
 
 Forge displays the spec, its current status, and how much work has been done — then requires you to type `confirm` before deleting. Cancels on any other input.
@@ -148,7 +148,7 @@ Forge displays the spec, its current status, and how much work has been done —
 
 /forge:list                      # check progress
 
-/forge:del old-experiment        # clean up a spec you no longer need
+/forge:remove old-experiment        # clean up a spec you no longer need
 ```
 
 ---

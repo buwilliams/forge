@@ -7,7 +7,7 @@
     "./commands/init.md",
     "./commands/new.md",
     "./commands/list.md",
-    "./commands/del.md",
+    "./commands/remove.md",
     "./commands/work.md"
   ]
 }
