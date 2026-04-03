@@ -61,7 +61,7 @@ Let `TASK_FILE` = `<SPEC_DIR>/todo/<TASK_NUM>_<TASK_SLUG>_task.md`.
 ## Step 3: Load context
 
 Read:
-- `<SPEC_DIR>/design.md` — the project spec
+- `<SPEC_DIR>/project.md` — the project spec
 - `<SPEC_DIR>/pipeline.md` — global constraints, tech stack, verification approach
 - All `*.md` files in `<SPEC_DIR>/council/` — available roles and their responsibilities
 
@@ -87,9 +87,9 @@ Task prompt from user:
 <PROMPT>
 ---
 
-design.md contents:
+project.md contents:
 ---
-<DESIGN_MD_CONTENTS>
+<PROJECT_MD_CONTENTS>
 ---
 
 pipeline.md contents:

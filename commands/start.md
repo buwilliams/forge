@@ -60,13 +60,13 @@ and stop.
 
 Set:
 - `SPEC_DIR` = matched directory absolute path (e.g., `<PROJECT_ROOT>/.forge/00003_auth_system`)
-- `DESIGN_FILE` = `<SPEC_DIR>/design.md`
+- `DESIGN_FILE` = `<SPEC_DIR>/project.md`
 - `NAME` = matched directory basename (e.g., `00003_auth_system`)
 - `FORGE_DIR` = `SPEC_DIR` (the spec directory IS the forge directory)
 
 Verify `DESIGN_FILE` exists using the Read tool. If it does not exist, print:
 ```
-[forge:start] Spec directory found but design.md is missing at <DESIGN_FILE>.
+[forge:start] Spec directory found but project.md is missing at <DESIGN_FILE>.
 Run /forge:new to set up the spec first.
 ```
 and stop.
@@ -85,7 +85,7 @@ Now execute all phases (Phase 1 through Phase 8) as described in that file, with
 - `PROJECT_ROOT` = already set above
 - `FORGE_DIR` = `<SPEC_DIR>` (e.g., `<PROJECT_ROOT>/.forge/00003_auth_system`)
 - `NAME` = directory basename (e.g., `00003_auth_system`)
-- Design file path = `<DESIGN_FILE>` (e.g., `<SPEC_DIR>/design.md`)
+- Design file path = `<DESIGN_FILE>` (e.g., `<SPEC_DIR>/project.md`)
 
 **Phase 1 modifications:**
 - Skip the "Derive the .forge directory name" step — `NAME` and `FORGE_DIR` are already set.
