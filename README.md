@@ -6,7 +6,7 @@ A Claude Code plugin for executing ambitious projects through big-picture prompt
 
 ## Why
 
-I wanted Claude Code to automate large goals, not just answer questions or write a file, but actually drive ambitious, multi-step work to completion. When I tried, it fell apart in a few consistent ways: The AI would lose track of important prompts I gave it, new sessions didn't have my previous prompts, and it would do a poor job of implementing ambitious goals.
+I wanted Claude Code to automate large goals, not just answer questions or write a file, but actually drive ambitious, multi-step work to completion. Since the release of Claude Code, I tried many solutions and landed on spec-driven designs, but that too was problematic for various reasons: The AI would lose track of important prompts I gave it, new sessions didn't have my previous prompts, and it would do a poor job of implementing ambitious goals.
 
 That's why I built Forge. It keeps track of your constitution, product, and project specs so you don't have to re-explain yourself. It handles context rot by launching subagents with exactly the right context for each piece of work. It manages the task workflow from decomposition to completion, tracking what's done, what's in progress, and what's blocked. And it all happens inside a natural Claude Code workflow, with no new tools or setup required.
 
