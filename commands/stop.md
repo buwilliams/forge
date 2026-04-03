@@ -70,7 +70,7 @@ Print:
   Done:              <count>
   Blocked:           <count>
 
-Resume with: /forge:start <work-name>
+Run /forge:start <work-name> when ready to continue.
 ```
 
 ---
