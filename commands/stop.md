@@ -4,9 +4,9 @@ You are the Forge stop command. When the user runs `/forge:stop <work-name>`, yo
 
 **Your arguments:** The first argument is a work-name or spec number.
 
-If no work-name is provided, print:
+If no work-name is provided, default to the latest spec (highest number). If no specs exist at all, print:
 ```
-[forge:stop] Usage: /forge:stop <work-name>
+[forge:stop] No specs found. Run /forge:new-spec <name> to create one.
 ```
 and stop.
 
@@ -27,7 +27,7 @@ List all numbered spec directories:
 ls -d <PROJECT_ROOT>/.forge/[0-9][0-9][0-9][0-9][0-9]_* 2>/dev/null | sort
 ```
 
-Normalize the work-name: lowercase, replace every non-alphanumeric character with an underscore, collapse consecutive underscores, strip leading/trailing underscores.
+If no work-name was provided, use the directory with the highest spec number as the default — print `[forge:stop] Defaulting to latest spec: <NAME>`. Otherwise, normalize the work-name: lowercase, replace every non-alphanumeric character with an underscore, collapse consecutive underscores, strip leading/trailing underscores.
 
 For each spec directory, extract the 5-digit prefix and the slug (everything after the first `_`). Match the normalized work-name against the list:
 - **Exact slug match**: normalized work-name equals the slug (e.g., `auth_system` matches `00003_auth_system`)

@@ -3,14 +3,16 @@
 You are the Forge new-task command. When the user runs `/forge:new-task <work-name> <prompt>`, you create a single new, fully self-contained task file in the spec's `todo/` directory using the same process and standards as the tasks-agent.
 
 **Your arguments:**
-- First argument: work-name or spec number (e.g., `auth-system`, `00003`)
-- Remaining arguments: a free-form prompt describing the task to create (e.g., `add rate limiting to the login endpoint`)
+- First argument: work-name or spec number (e.g., `auth-system`, `00003`) — optional, defaults to the latest spec
+- Remaining arguments: a free-form prompt describing the task to create (e.g., `add rate limiting to the login endpoint`) — required
 
-If no work-name or prompt is provided, print:
+If the entire invocation is empty (no work-name and no prompt), print:
 ```
-[forge:new-task] Usage: /forge:new-task <work-name> <prompt describing the task>
+[forge:new-task] Usage: /forge:new-task [<work-name>] <prompt describing the task>
 ```
 and stop.
+
+If only one argument is given and it doesn't look like a spec name or number (i.e., it's a sentence or phrase), treat it as the prompt and default the work-name to the latest spec.
 
 ---
 
@@ -29,7 +31,7 @@ List all numbered spec directories:
 ls -d <PROJECT_ROOT>/.forge/[0-9][0-9][0-9][0-9][0-9]_* 2>/dev/null | sort
 ```
 
-Normalize the work-name: lowercase, replace hyphens/spaces with underscores. Match against the list (exact slug, exact number, or unambiguous prefix). If no match or ambiguous, print the appropriate error and stop.
+If no work-name was provided (or the single argument was treated as the prompt), use the directory with the highest spec number as the default — print `[forge:new-task] Defaulting to latest spec: <NAME>`. Otherwise, normalize the work-name: lowercase, replace hyphens/spaces with underscores. Match against the list (exact slug, exact number, or unambiguous prefix). If no match or ambiguous, print the appropriate error and stop.
 
 Set:
 - `SPEC_DIR` = matched directory absolute path

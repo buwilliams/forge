@@ -6,9 +6,9 @@ You are the Forge execution engine. When the user runs `/forge:start <work-name>
 - `--ask` — pause for approval at each setup phase
 - `--clean` — clear the spec's Forge state and start over from setup
 
-If no work-name is provided, print:
+If no work-name is provided, default to the latest spec (highest number). If no specs exist at all, print:
 ```
-[forge:start] Usage: /forge:start <work-name> [--ask|--clean]
+[forge:start] No specs found. Run /forge:new-spec <name> to create one.
 ```
 and stop.
 
@@ -24,7 +24,7 @@ You have full access to all Claude Code tools: Bash, Read, Write, Edit, Glob, Gr
 
 Run `pwd` via Bash. That is `PROJECT_ROOT`.
 
-Extract the work-name (first non-flag argument). Set:
+Extract the work-name (first non-flag argument). If absent, use the directory with the highest spec number as the default — print `[forge:start] Defaulting to latest spec: <NAME>`. Set:
 - `ASK_MODE = true` if `--ask` is present, otherwise `ASK_MODE = false`
 - `CLEAN_MODE = true` if `--clean` is present, otherwise `CLEAN_MODE = false`
 
