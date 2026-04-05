@@ -50,7 +50,7 @@ For each spec directory, determine its status by checking the filesystem:
 
 **Status rules (evaluate in order):**
 
-1. **`not started`** — `project.md` exists, but no `council.md` and `project.md` has no `## Global Constraints` section. The spec has been written but Forge has never set it up.
+1. **`not started`** — `project.md` exists but has no `## Global Constraints` section. The spec has been written but Forge has never set it up.
 
 2. **`in progress`** — `todo/*.md` or `working/*.md` contains files. Forge is mid-run.
 

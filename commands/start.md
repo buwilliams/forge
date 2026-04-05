@@ -89,7 +89,7 @@ If it does not exist, run `git init <PROJECT_ROOT>`. If that fails, print `[forg
 
 Ensure subdirectories exist (idempotent):
 ```bash
-mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <SPEC_DIR>/council
+mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <PROJECT_ROOT>/.forge/council
 ```
 
 ---
@@ -98,16 +98,16 @@ mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <
 
 If `CLEAN_MODE = true`:
 
-1. Delete all task files from todo/, working/, done/, blocked/, and all agent files from council/:
+1. Delete all task files from todo/, working/, done/, and blocked/:
    ```bash
    rm -f <SPEC_DIR>/todo/*.md <SPEC_DIR>/working/*.md <SPEC_DIR>/done/*.md \
-         <SPEC_DIR>/blocked/*.md <SPEC_DIR>/blocked/*.reason.md \
-         <SPEC_DIR>/council/*.md
+         <SPEC_DIR>/blocked/*.md <SPEC_DIR>/blocked/*.reason.md
    ```
-2. Delete generated artifacts:
+2. Delete generated spec artifacts:
    ```bash
-   rm -f <SPEC_DIR>/council.md <SPEC_DIR>/verifier.md <SPEC_DIR>/plan.md
+   rm -f <SPEC_DIR>/verifier.md <SPEC_DIR>/plan.md
    ```
+   Council files (`<PROJECT_ROOT>/.forge/council.md` and `<PROJECT_ROOT>/.forge/council/`) are shared across all specs and are **not** deleted on clean.
 3. Strip the Forge execution config from `project.md`: read the file and remove everything from the `---` separator that precedes `## Global Constraints` to the end of the file. Write the truncated version back.
 4. Print: `[forge:start] Cleaned. Running full setup...`
 5. Proceed to Step 5 (Resume Check), which will start from the beginning.
@@ -122,13 +122,13 @@ Check the current state of `<SPEC_DIR>` and skip forward to the appropriate step
 
 2. `<SPEC_DIR>/todo/` contains any `*.md` files **OR** `<SPEC_DIR>/working/` contains any `*.md` files → **skip to Step 10** (Execute). Print: `[forge:start] Resuming execution — <N> tasks pending.`
 
-3. `<SPEC_DIR>/verifier.md` exists AND `<SPEC_DIR>/council/` has `*.md` files AND `<SPEC_DIR>/todo/` is empty → **skip to Step 9** (Tasks). Print: `[forge:start] Resuming at task decomposition...`
+3. `<SPEC_DIR>/verifier.md` exists AND `<PROJECT_ROOT>/.forge/council/` has `*.md` files AND `<SPEC_DIR>/todo/` is empty → **skip to Step 9** (Tasks). Print: `[forge:start] Resuming at task decomposition...`
 
-4. `<SPEC_DIR>/council/` has `*.md` files AND `<SPEC_DIR>/verifier.md` does not exist → **skip to Step 8** (Verifier). Print: `[forge:start] Resuming at verifier generation...`
+4. `<PROJECT_ROOT>/.forge/council/` has `*.md` files AND `<SPEC_DIR>/verifier.md` does not exist AND `project.md` contains `## Global Constraints` → **skip to Step 8** (Verifier). Print: `[forge:start] Resuming at verifier generation...`
 
-5. `<SPEC_DIR>/council.md` exists AND `<SPEC_DIR>/council/` has no `*.md` files AND `project.md` contains `## Global Constraints` → **skip to Step 7** (Role Agents). Print: `[forge:start] Resuming at role agent generation...`
+5. (`<PROJECT_ROOT>/.forge/council.md` exists OR `<PROJECT_ROOT>/.forge/council/` has `*.md` files) AND `project.md` does NOT contain `## Global Constraints` → **skip to Step 6b** (Spec Agent). Print: `[forge:start] Resuming at spec finalization...`
 
-6. `<SPEC_DIR>/council.md` exists AND `project.md` does NOT contain `## Global Constraints` → **skip to Step 6b** (Spec Agent). Print: `[forge:start] Resuming at spec finalization...`
+6. `<PROJECT_ROOT>/.forge/council.md` exists AND `<PROJECT_ROOT>/.forge/council/` has no `*.md` files AND `project.md` contains `## Global Constraints` → **skip to Step 7** (Role Agents). Print: `[forge:start] Resuming at role agent generation...`
 
 7. Otherwise: start from Step 6 (Council).
 
@@ -142,7 +142,7 @@ Read `<SPEC_DIR>/project.md`. Read any tech stack files that exist at `PROJECT_R
 
 Determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted.
 
-Write `<SPEC_DIR>/council.md`:
+Write `<PROJECT_ROOT>/.forge/council.md`:
 ```
 # Council
 
@@ -210,13 +210,13 @@ If `ASK_MODE = false`: Print `[forge:start] Spec finalized.` and proceed.
 
 Print: `[forge:start] Generating role agents...`
 
-Read `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Read project.md and council.md. Invoke the Agent tool:
+Read `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Read project.md and `<PROJECT_ROOT>/.forge/council.md`. Invoke the Agent tool:
 
 ```
 You are the roles agent.
 
 Project root: <PROJECT_ROOT>
-Forge dir: <SPEC_DIR>
+Forge dir: <PROJECT_ROOT>/.forge
 
 council.md contents:
 ---
@@ -231,7 +231,7 @@ project.md contents (includes Forge execution config):
 <ROLES_AGENT_INSTRUCTIONS>
 ```
 
-After the agent returns, read all `*.md` files in `<SPEC_DIR>/council/` and display a summary (one line per file).
+After the agent returns, read all `*.md` files in `<PROJECT_ROOT>/.forge/council/` and display a summary (one line per file).
 
 If `ASK_MODE = true`: Ask `Do these role agents look correct? Reply 'approve' or describe issues.` If issues, re-invoke with feedback. Repeat until approved.
 If `ASK_MODE = false`: Print `[forge:start] Role agents generated: <comma-separated list>.` and proceed.
@@ -281,7 +281,7 @@ Print: `[forge:start] Verifier generated.`
 
 Print: `[forge:start] Decomposing into tasks...`
 
-Read all `*.md` files in `<SPEC_DIR>/council/`. Read `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`. Invoke the Agent tool:
+Read all `*.md` files in `<PROJECT_ROOT>/.forge/council/`. Read `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`. Invoke the Agent tool:
 
 ```
 You are the tasks agent.
@@ -295,7 +295,7 @@ project.md contents (includes Forge execution config):
 ---
 
 Council agent files:
-<For each file in <SPEC_DIR>/council/:>
+<For each file in <PROJECT_ROOT>/.forge/council/:>
 ### <filename>
 ---
 <FILE_CONTENTS>
@@ -381,11 +381,11 @@ If `ATTEMPT_MAP[<taskname>]` >= `MAX_TRIES`:
 
 Read `<SPEC_DIR>/working/<taskname>.md`. Parse the `## Role` section (the first non-blank line after `## Role`). Let `ROLE` = that value, trimmed and lowercased.
 
-Check whether `<SPEC_DIR>/council/<ROLE>.md` exists. If it does, read it as `AGENT_INSTRUCTIONS`. If not, read `${CLAUDE_PLUGIN_ROOT}/agents/executor.md` as `AGENT_INSTRUCTIONS`.
+Check whether `<PROJECT_ROOT>/.forge/council/<ROLE>.md` exists. If it does, read it as `AGENT_INSTRUCTIONS`. If not, read `${CLAUDE_PLUGIN_ROOT}/agents/executor.md` as `AGENT_INSTRUCTIONS`.
 
 Read `<SPEC_DIR>/project.md` as `PROJECT_CONTENTS`.
 
-Read all `*.md` files in `<SPEC_DIR>/council/` as `COUNCIL_FILES`.
+Read all `*.md` files in `<PROJECT_ROOT>/.forge/council/` as `COUNCIL_FILES`.
 
 ### Loop Step 5: Invoke Task Agent
 
@@ -580,7 +580,7 @@ Print:
 - **git init fails:** Error and stop after Step 2.
 - **Agent tool invocation fails:** Print `[forge:start] Error invoking agent for task <taskname>. Treating as no-signal.` Increment attempt count and move back to todo/.
 - **project.md missing `**Max task tries:**` line:** Default to 3.
-- **council/ has no agent file for a task's role:** Use `executor.md` silently.
+- **`.forge/council/` has no agent file for a task's role:** Use `executor.md` silently.
 - **working/ contains multiple files on resume:** Use the lexicographically first one.
 
 ---
@@ -592,5 +592,5 @@ Print:
 3. **The verifier is independent.** It re-checks from scratch; it does not trust the task agent's self-reported verification.
 4. **Attempt counts reset on successful completion.** `ATTEMPT_MAP` entry is removed when a task moves to `done/`.
 5. **Council deliberation is in-context.** All council files are passed to the task agent in a single invocation.
-6. **The spec directory IS the forge directory.** All artifacts live in `<SPEC_DIR>`, not a subdirectory.
+6. **Council is product-level, not spec-level.** `council.md` and `council/` live in `<PROJECT_ROOT>/.forge/`, shared across all specs. All other artifacts live in `<SPEC_DIR>`.
 7. **Never re-run completed tasks.** If a task is in `done/`, it is done. Do not re-execute it.

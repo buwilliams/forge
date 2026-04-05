@@ -100,7 +100,7 @@ Incorporate feedback and redisplay. Repeat until the user types `accept` (case-i
 ## Step 5: Write the Spec and Create Directory Tree
 
 ```bash
-mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <SPEC_DIR>/council
+mkdir -p <SPEC_DIR>/todo <SPEC_DIR>/working <SPEC_DIR>/done <SPEC_DIR>/blocked <PROJECT_ROOT>/.forge/council
 ```
 
 Write the finalized spec to `<SPEC_DIR>/project.md`.
@@ -117,7 +117,7 @@ Print: `[forge:new] Determining council...`
 
 Read `<SPEC_DIR>/project.md` in full. Examine the tech stack files already loaded. Based on the project intent and tech stack, determine the council of agent roles. Always include at minimum: `programmer`, `tester`, `product-manager`. Add domain-specific roles as warranted (e.g., `security-engineer`, `api-designer`, `data-engineer`, `ux-engineer`, `writer`, `editor`).
 
-Write `<SPEC_DIR>/council.md`:
+Write `<PROJECT_ROOT>/.forge/council.md`:
 
 ```
 # Council
@@ -190,7 +190,7 @@ Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`. Invoke the Ag
 You are the roles agent.
 
 Project root: <PROJECT_ROOT>
-Forge dir: <SPEC_DIR>
+Forge dir: <PROJECT_ROOT>/.forge
 
 council.md contents:
 ---
@@ -207,7 +207,7 @@ project.md contents (includes Forge execution config):
 
 Where `<ROLES_AGENT_INSTRUCTIONS>` is the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/roles.md`.
 
-After the agent returns, print: `[forge:new] Role agents: <list of files in <SPEC_DIR>/council/>`
+After the agent returns, print: `[forge:new] Role agents: <list of files in <PROJECT_ROOT>/.forge/council/>`
 
 ---
 
@@ -254,7 +254,7 @@ Print: `[forge:new] Verifier generated.`
 
 Print: `[forge:new] Decomposing into tasks...`
 
-Read all `*.md` files in `<SPEC_DIR>/council/`. Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`. Invoke the Agent tool:
+Read all `*.md` files in `<PROJECT_ROOT>/.forge/council/`. Read the full contents of `${CLAUDE_PLUGIN_ROOT}/agents/tasks.md`. Invoke the Agent tool:
 
 ```
 You are the tasks agent.
@@ -268,7 +268,7 @@ project.md contents (includes Forge execution config):
 ---
 
 Council agent files:
-<For each file in <SPEC_DIR>/council/:>
+<For each file in <PROJECT_ROOT>/.forge/council/:>
 ### <filename>
 ---
 <FILE_CONTENTS>

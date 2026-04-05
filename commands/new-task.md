@@ -64,7 +64,7 @@ Let `TASK_FILE` = `<SPEC_DIR>/todo/<TASK_NUM>_<TASK_SLUG>_task.md`.
 
 Read:
 - `<SPEC_DIR>/project.md` — the project spec, including Global Constraints and execution config
-- All `*.md` files in `<SPEC_DIR>/council/` — available roles and their responsibilities
+- All `*.md` files in `<PROJECT_ROOT>/.forge/council/` — available roles and their responsibilities
 
 Also read a sample of existing task files (up to 3 from done/ or todo/) to understand the conventions and patterns already established for this spec.
 
@@ -94,7 +94,7 @@ project.md contents (includes Global Constraints and execution config):
 ---
 
 Council agent files:
-<For each file in <SPEC_DIR>/council/:>
+<For each file in <PROJECT_ROOT>/.forge/council/:>
 ### <filename>
 ---
 <FILE_CONTENTS>
