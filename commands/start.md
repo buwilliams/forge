@@ -484,6 +484,11 @@ Parse the verifier's output:
 - `mv <SPEC_DIR>/working/<taskname>.md <SPEC_DIR>/done/<taskname>.md`
 - Print: `[forge:start] Task <taskname> complete. ✓`
 - Remove `<taskname>` from `ATTEMPT_MAP`
+- Commit the task completion:
+  ```bash
+  git add -A && git commit -m "forge: complete <taskname>"
+  ```
+  If `git commit` fails due to a pre-commit hook: read the hook's output, fix the issue, and retry. If there is nothing to commit (no changes), skip silently.
 - Push to remote if one exists:
   ```bash
   git push
