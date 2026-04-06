@@ -56,7 +56,7 @@ coverage/
 .nyc_output/
 ```
 
-If `.gitignore` does not exist or is missing entries from the above list, create a task (numbered 00000) to create or augment it. This task uses the `programmer` role and must be the first task. The filename is `00000_<slug>_task.md`. The Save Command `git add .gitignore && git commit -m "task-00000: ensure .gitignore covers secrets and build artifacts"` (not `git add -A` — only touch `.gitignore`).
+If `.gitignore` does not exist or is missing entries from the above list, create a task (numbered 00000) to create or augment it. This task uses the `programmer` role and must be the first task. The filename is `00000_gitignore.md`. The Save Command `git add .gitignore && git commit -m "task-00000: ensure .gitignore covers secrets and build artifacts"` (not `git add -A` — only touch `.gitignore`).
 
 If `.gitignore` already covers all required entries, skip this task and start numbering at 00000 for the first real work task.
 
@@ -87,9 +87,7 @@ Guidelines for task ordering:
 
 ## Step 4: Write Each Task File
 
-**Derive the slug** from `<forge_dir>`: take the last path component (the directory name). For example, if `<forge_dir>` is `/project/.forge/my_design`, the slug is `my_design`.
-
-For each task, write a file to `<forge_dir>/todo/<NNNNN>_<slug>_task.md` where `<NNNNN>` is a zero-padded 5-digit number starting from 00000 and `<slug>` is the value derived above.
+For each task, write a file to `<forge_dir>/todo/<NNNNN>_<desc>.md` where `<NNNNN>` is a zero-padded 5-digit number starting from 00000 and `<desc>` is a short snake_case description of what the task does (2–4 words, derived from the task title). For example: `00000_gitignore.md`, `00003_user_routes.md`, `00007_auth_middleware.md`.
 
 **Critical rules for task files:**
 - NO YAML frontmatter (no `---` delimiters at the top)
@@ -275,7 +273,7 @@ After writing all task files, write `<forge_dir>/plan.md` with this structure:
 After writing all files, perform this final check:
 
 1. Count task files in `<forge_dir>/todo/` — does the number match the rows in `plan.md`?
-2. Do all task files use the format `<NNNNN>_<slug>_task.md` with 5-digit zero-padded numbers and no gaps? (00000_<slug>_task.md, 00001_<slug>_task.md, ...)
+2. Do all task files use the format `<NNNNN>_<desc>.md` with 5-digit zero-padded numbers and no gaps? (00000_<desc>.md, 00001_<desc>.md, ...)
 3. Does every task file have all required sections: Role, Objective, Context, Steps, Verification, Done When, Save Command?
 4. Does every task file have NO YAML frontmatter, NO metadata fields?
 5. Does every code-writing task have at least one verification step per applicable Global Constraint?

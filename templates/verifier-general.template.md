@@ -20,7 +20,7 @@ The following constraints apply to every task. If the `## Verification` section 
 ## Inputs You Receive
 
 Your invocation provides:
-1. The task file (e.g., `<forge_dir>/working/00003_<slug>_task.md`)
+1. The task file (e.g., `<forge_dir>/working/00003_user_routes.md`)
 2. The task file contents
 3. The project root path
 

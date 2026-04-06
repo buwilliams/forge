@@ -36,7 +36,6 @@ If no work-name was provided (or the single argument was treated as the prompt),
 Set:
 - `SPEC_DIR` = matched directory absolute path
 - `SLUG` = the directory basename (e.g., `00003_auth_system`)
-- `TASK_SLUG` = everything after the first `_` in the directory name (e.g., `auth_system`)
 
 Verify `<SPEC_DIR>/project.md` exists and contains a `## Global Constraints` section. If not, print:
 ```
@@ -56,7 +55,7 @@ ls <SPEC_DIR>/todo/*.md <SPEC_DIR>/working/*.md <SPEC_DIR>/done/*.md <SPEC_DIR>/
 Extract the 5-digit numeric prefix from each filename. Find the highest number. The new task number is that value plus one, zero-padded to 5 digits. If no task files exist anywhere, start at `00000`.
 
 Let `TASK_NUM` = the new task number (e.g., `00007`).
-Let `TASK_FILE` = `<SPEC_DIR>/todo/<TASK_NUM>_<TASK_SLUG>_task.md`.
+Let `TASK_FILE` = `<SPEC_DIR>/todo/<TASK_NUM>_<desc>.md` where `<desc>` is a short snake_case description of what the task does (2–4 words derived from the user's prompt, e.g., `rate_limiting` or `login_endpoint`).
 
 ---
 
@@ -80,7 +79,6 @@ You are the forge tasks agent creating a single new task.
 Project root: <PROJECT_ROOT>
 Spec dir: <SPEC_DIR>
 New task number: <TASK_NUM>
-Task slug: <TASK_SLUG>
 Task file to write: <TASK_FILE>
 
 Task prompt from user:
@@ -143,4 +141,4 @@ Print:
 1. **One task only.** Never create multiple task files or modify plan.md, project.md, or any other spec artifact.
 2. **Follow the same standards as the tasks-agent.** Global Constraints must be concrete verification steps. Dynamic verification is required for tasks with observable output.
 3. **Number sequentially.** The new task number is always one higher than the current maximum across all subdirectories — never reuse a number.
-4. **Use the correct filename format.** `<NNNNN>_<task_slug>_task.md` with 5-digit zero-padded number.
+4. **Use the correct filename format.** `<NNNNN>_<desc>.md` with 5-digit zero-padded number, where `<desc>` is a short snake_case description of the task (2–4 words).
