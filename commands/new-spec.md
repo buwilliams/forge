@@ -213,6 +213,8 @@ After the agent returns, print: `[forge:new] Role agents: <list of files in <PRO
 
 ## Step 9: Generate Verifier
 
+> **Parallelization note:** Step 9 (Verifier) and Step 10 (Tasks) have no dependency on each other — both only consume `project.md` and the council files produced by Step 8. **Invoke both Agent tools in a single message** so they run concurrently, then run each step's post-invocation checks once both agents return.
+
 Print: `[forge:new] Generating verifier...`
 
 Determine the verifier template path:
@@ -251,6 +253,8 @@ Print: `[forge:new] Verifier generated.`
 ---
 
 ## Step 10: Decompose into Tasks
+
+> **Parallelization note:** See Step 9 — invoke this agent in the same message as the verifier agent, and perform both post-invocation checks once both return.
 
 Print: `[forge:new] Decomposing into tasks...`
 

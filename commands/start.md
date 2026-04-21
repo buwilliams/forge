@@ -240,6 +240,8 @@ If `ASK_MODE = false`: Print `[forge:start] Role agents generated: <comma-separa
 
 ## Step 8: Generate Verifier
 
+> **Parallelization note:** Step 8 (Verifier) and Step 9 (Tasks) have no dependency on each other — both only consume `project.md` and the council files produced by Step 7. When running both from a fresh setup (not a resume that enters only one), **invoke both Agent tools in a single message** so they run concurrently, then run each step's post-invocation checks once both agents return. If you are resuming and only one of the two steps is needed (per the Resume Check conditions), run that one alone.
+
 Print: `[forge:start] Generating verifier...`
 
 Determine `PROJECT_TYPE`: if `project.md` references code files, languages, or tech stack → `technical`; otherwise → `general`.
@@ -278,6 +280,8 @@ Print: `[forge:start] Verifier generated.`
 ---
 
 ## Step 9: Decompose into Tasks
+
+> **Parallelization note:** See Step 8 — when both Step 8 and Step 9 are running fresh, invoke them in a single message and perform both post-invocation checks once both return.
 
 Print: `[forge:start] Decomposing into tasks...`
 
@@ -332,6 +336,12 @@ If `ASK_MODE = false`: Print `[forge:start] Starting execution.` and proceed.
 
 Maintain `ATTEMPT_MAP`: a mapping of task filename → attempt count for the current session. Initialized empty. (This is NOT written to files — it lives in-context only.)
 
+**Precompute loop-invariant context:**
+
+Read `<SPEC_DIR>/project.md` once and store as `PROJECT_CONTENTS`. It does not change during a run, so reading it per-task is wasteful. (If a `git pull --rebase` mid-loop updates `project.md`, that updated content will only be picked up on the next `/forge:start` invocation — acceptable given the speed win.)
+
+Read all `*.md` files in `<PROJECT_ROOT>/.forge/council/` once. For each file, extract only the DELIBERATION section — the content from the line matching `^## DELIBERATION mode` through end of file. If that heading is absent, use the full file contents as a fallback. Store the result as `COUNCIL_DELIBERATIONS`: a mapping of role (filename minus `.md`) → deliberation text. This is used by every task invocation below, so the files are read and sliced once per run rather than once per task.
+
 **Execution loop:**
 
 Repeat until no tasks remain in `<SPEC_DIR>/todo/` or `<SPEC_DIR>/working/`:
@@ -383,9 +393,7 @@ Read `<SPEC_DIR>/working/<taskname>.md`. Parse the `## Role` section (the first 
 
 Check whether `<PROJECT_ROOT>/.forge/council/<ROLE>.md` exists. If it does, read it as `AGENT_INSTRUCTIONS`. If not, read `${CLAUDE_PLUGIN_ROOT}/agents/executor.md` as `AGENT_INSTRUCTIONS`.
 
-Read `<SPEC_DIR>/project.md` as `PROJECT_CONTENTS`.
-
-Read all `*.md` files in `<PROJECT_ROOT>/.forge/council/` as `COUNCIL_FILES`.
+`PROJECT_CONTENTS` and `COUNCIL_DELIBERATIONS` were already loaded before the loop; reuse them as-is.
 
 ### Loop Step 5: Invoke Task Agent
 
@@ -415,11 +423,13 @@ Current task file: <SPEC_DIR>/working/<taskname>.md
 
 ## Council Perspectives (Deliberation)
 
-Before implementing anything, read each council member's DELIBERATION section below and reason through their perspective in-context. Write a brief (2-4 sentence) summary of what each council member would flag or care about regarding this task. Only after completing this deliberation, begin implementation.
+Before implementing anything, apply each council member's deliberation perspective below to this task. For each member, note in one line any specific conflict or risk their lens raises — or skip them entirely if nothing concrete applies. Do not pad with generic restatements. Then begin implementation.
 
-<For each file in COUNCIL_FILES (including the role's own file):>
-### Council member: <filename>
-<FILE_CONTENTS>
+The executing role's own perspective is already embedded in `## Your Role Instructions` above — only the other council members appear here.
+
+<For each (role, deliberation) in COUNCIL_DELIBERATIONS where role != ROLE:>
+### Council member: <role>
+<deliberation>
 </For each>
 
 ---
@@ -596,6 +606,6 @@ Print:
 2. **Move files atomically.** Always use `mv`, never copy-then-delete.
 3. **The verifier is independent.** It re-checks from scratch; it does not trust the task agent's self-reported verification.
 4. **Attempt counts reset on successful completion.** `ATTEMPT_MAP` entry is removed when a task moves to `done/`.
-5. **Council deliberation is in-context.** All council files are passed to the task agent in a single invocation.
+5. **Council deliberation is in-context.** Each task agent receives the other council members' DELIBERATION sections in its invocation; the executing role's own file is already in `## Your Role Instructions` and is not duplicated in the council bundle.
 6. **Council is product-level, not spec-level.** `council.md` and `council/` live in `<PROJECT_ROOT>/.forge/`, shared across all specs. All other artifacts live in `<SPEC_DIR>`.
 7. **Never re-run completed tasks.** If a task is in `done/`, it is done. Do not re-execute it.
