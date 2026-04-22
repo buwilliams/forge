@@ -36,6 +36,39 @@
 - 
 - 
 
+## Operating Conventions
+
+<!-- How agents should interact with your working environment while executing tasks.
+     Unlike Hard Constraints (rules about what the code/output must BE), these describe
+     HOW work is performed so agents don't stomp on running processes, shared resources,
+     or your dev loop. These flow into the generated spec and shape task verification.
+
+     The most important convention is the app lifecycle mode, which governs how the
+     verifier interacts with any long-running process the project produces:
+
+       - "Lifecycle: oneshot"
+         No long-running process — exercise commands run to completion (CLIs, scripts,
+         batch jobs, data pipelines).
+
+       - "Lifecycle: external"
+         I keep the app running myself (separate terminal, hot-reload / file watcher).
+         Verifier must NOT start or stop the app — it runs checks against the already-
+         running instance. If the app isn't reachable, verification fails loudly so I
+         can start it and retry. Assumes your dev loop reflects current code.
+
+       - "Lifecycle: managed"
+         Verifier owns a dedicated instance (typically on a separate port) that it
+         starts and stops. My own dev instance, if any, stays untouched. Use this when
+         there's no reliable hot-reload, or when isolation from my dev state matters.
+
+     Other examples of conventions worth stating:
+       - "Shared dev database — never drop or recreate; migrations only"
+       - "Do not kill processes by name without confirmation"
+       - "Port 3000 is mine; agents may use 4000-4099 for spawned instances" -->
+
+- 
+- 
+
 ## Out of Scope — Forever
 
 <!-- What will this project explicitly never do, no matter how reasonable it sounds?

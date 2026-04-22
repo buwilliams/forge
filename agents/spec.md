@@ -11,7 +11,7 @@ Your invocation always provides:
 2. `project.md` — the user's project spec (already written; you will append to it)
 3. The project root path — so you can inspect the tech stack
 4. The spec directory path — where `project.md` lives
-5. (Optional) `constitution.md` — treat every Hard Constraint here as a Global Constraint
+5. (Optional) `constitution.md` — treat every Hard Constraint here as a Global Constraint; treat every entry under `## Operating Conventions` as guidance that shapes the Dynamic Verification section (especially the lifecycle mode)
 6. (Optional) `product.md` — use to inform the Overview and ensure constraints align with the product's purpose
 7. (On revision runs) The existing appended section and user feedback
 
@@ -103,10 +103,27 @@ Every task that produces output must verify the output actually behaves correctl
 | Pure research / planning | No dynamic exercise possible — omit this section |
 
 Define:
-1. **Exercise command** — how to invoke, apply, or run the primary output
-2. **Ready check** *(services only)* — a single command that exits 0 when the service is accepting input
-3. **Teardown** *(services and workers only)* — how to stop the process after exercising
-4. **Environment** *(optional)* — variables or setup required before exercising
+1. **Lifecycle** — one of `oneshot`, `external`, or `managed` (see below)
+2. **Exercise command** — how to invoke, apply, or run the primary output
+3. **Ready check** *(services only)* — a single command that exits 0 when the service is accepting input
+4. **Teardown** *(managed services only)* — how to stop the process after exercising
+5. **Environment** *(optional)* — variables or setup required before exercising
+
+### Choosing the Lifecycle Mode
+
+The lifecycle mode tells the verifier how to treat any long-running process this project produces. Pick in this order:
+
+1. **If `constitution.md` has an `## Operating Conventions` entry declaring a lifecycle** (e.g. "Lifecycle: external"), use that verbatim.
+2. **Else, infer from the exercise model and tech stack:**
+   - Exercise runs to completion (CLI, script, batch, library, data pipeline, document renderer, pure research) → `oneshot`
+   - Long-running service with a hot-reload / watch toolchain (Vite, Next dev, Webpack dev server, Nodemon, `django runserver`, `rails server`, `air` for Go, `cargo watch`, etc.) → `external`
+   - Long-running service without reliable hot-reload (compiled binaries, Gunicorn without autoreload, production-style servers) → `managed`
+3. **When in doubt, prefer `external`** — it's the least invasive on the user's working environment. The verifier will fail loudly if the app isn't reachable, which is recoverable; `managed` risks clashing with the user's own instance.
+
+Mode semantics the downstream verifier will apply:
+- **oneshot** — no start, no ready check, no teardown; verification runs the exercise command directly and checks its output.
+- **external** — verifier runs the ready check against the already-running instance; if it fails, verification fails with instructions to start the app. Verifier never executes teardown.
+- **managed** — verifier starts the app, waits for the ready check, runs verification, then executes teardown.
 
 ---
 
@@ -128,9 +145,10 @@ Append the following to `project.md`, starting with a `---` separator:
 ...
 
 ## Dynamic Verification
+- **Lifecycle:** `oneshot` | `external` | `managed`
 - **Exercise command:** `<how to invoke, apply, or run the output>` *(omit entire line if not applicable)*
-- **Ready check:** `<command that exits 0 when ready>` *(services only — omit otherwise)*
-- **Teardown:** `kill $APP_PID` *(services and workers only — omit otherwise)*
+- **Ready check:** `<command that exits 0 when ready>` *(services only — omit for `oneshot`)*
+- **Teardown:** `kill $APP_PID` *(only for `managed` — omit otherwise)*
 - **Environment:** `<KEY=value ...>` *(omit if none required)*
 
 ## Execution
